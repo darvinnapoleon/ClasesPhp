@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c1fa4de5-165e-4bb0-895b-1d7c1d553189">
+	<property name="ireport.zoom" value="1.1"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="mesv" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="anov" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     detvale.`coddetval` AS detvale_coddetval,
+     cliente.`apecli` AS cliente_apecli,
+     cliente.`nomcli` AS cliente_nomcli,
+     cliente.`dnicli` AS cliente_dnicli,
+     detvale.`mesvale` AS vale_mesvale
+FROM
+     `cliente` cliente INNER JOIN `detvale` detvale ON cliente.`idcli` = detvale.`idcli` WHERE detvale.`mesvale` = $P{mesv} AND detvale.`anovale` = $P{anov}
+ORDER BY
+     cliente.`apecli` ASC]]>
+	</queryString>
+	<field name="detvale_coddetval" class="java.lang.String"/>
+	<field name="cliente_apecli" class="java.lang.String"/>
+	<field name="cliente_nomcli" class="java.lang.String"/>
+	<field name="cliente_dnicli" class="java.lang.String"/>
+	<field name="vale_mesvale" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="81" splitType="Stretch">
+			<staticText>
+				<reportElement x="50" y="16" width="316" height="31" forecolor="#FF0033" uuid="9c762940-24f3-4bb6-ace8-496e79dbe279"/>
+				<textElement textAlignment="Center" markup="none">
+					<font fontName="Times New Roman" size="20"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE BENEFICIARIOS]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="397" y="16" width="144" height="20" uuid="e703a0f6-9339-4c92-b6a1-27bbbbe21679"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="50" y="0" width="347" height="20" uuid="52bc5867-96ff-4e4a-9fdd-c64279adbeb1"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12"/>
+				</textElement>
+				<text><![CDATA[El presente reporte realiza un filtrado del total de beneficiarios del mes]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="394" y="0" width="10" height="20" uuid="0a66cf16-b6ff-47b0-ba1a-3f0cf7db9b20"/>
+				<textFieldExpression><![CDATA[$F{vale_mesvale}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="404" y="0" width="88" height="20" uuid="213ba8b5-0fb5-4fbe-8a5d-8ed2cc145875"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12"/>
+				</textElement>
+				<text><![CDATA[del presente año]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="366" y="0" width="85" height="20" backcolor="#3333FF" uuid="33a61051-1ce5-4b7a-94e6-bfe9708b5da9"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Firma]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="18" y="0" width="92" height="20" forecolor="#000000" backcolor="#3333FF" uuid="5659a8ce-3467-49b7-873e-ef6df6d271d9"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Codigo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="110" y="0" width="191" height="20" backcolor="#3333FF" uuid="28fc77e9-70dd-453d-a8f5-c684db32f732"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Apellidos y Nombres]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="301" y="0" width="65" height="20" backcolor="#3333FF" uuid="65bb457e-6ef5-420b-87a2-443fb8fd2922"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dni]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="451" y="0" width="90" height="20" backcolor="#3333FF" uuid="bc033062-2d11-49d0-8236-b7346f1d86e6"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fec.Canje]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="29" splitType="Stretch">
+			<textField>
+				<reportElement x="112" y="0" width="191" height="29" forecolor="#3333FF" uuid="b95e0201-4811-434c-96d6-1c5b211964f7"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_apecli}+" "+$F{cliente_nomcli}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="303" y="0" width="63" height="29" uuid="4e94cea3-a4e2-4854-a13e-423dc7809e0f"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{cliente_dnicli}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="366" y="0" width="85" height="29" uuid="5671eff6-f069-473c-bba7-a0b20fdc154a"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[" "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="18" y="0" width="94" height="29" uuid="c3a16de3-73b1-4e1c-9318-e0854944b2b4"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{detvale_coddetval}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="0" width="90" height="29" uuid="5cbe592e-a04d-4445-a170-623b7ea45164"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textFieldExpression><![CDATA["."]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="37" splitType="Stretch">
+			<textField>
+				<reportElement x="166" y="9" width="142" height="20" uuid="d484b0cd-f7f5-46da-a483-b7c00fc11378"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pagina "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="308" y="9" width="54" height="20" uuid="3b172104-3284-4e96-acb7-731e04fddea7"/>
+				<textElement>
+					<font fontName="Times New Roman" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="1" splitType="Stretch"/>
+	</summary>
+</jasperReport>
