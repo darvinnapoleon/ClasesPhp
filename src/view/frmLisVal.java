@@ -11,6 +11,8 @@ import java.awt.Color;
 
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +50,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         lbcodcli.setVisible(false);
         txtcli.setEnabled(false);
         txtcodval.setEnabled(false);
+        CanValAcu();
 
         // visualizar(tblisbol, "");
     }
@@ -64,11 +67,22 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         }
     }
 
+    void CanValAcu() {
+        try {
+            double tot;
+            Vales val = new Vales();
+            tot = val.can_valcan() * 16;
+            lbdin.setText("" + tot);
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e);
+        }
+    }
+
     void mostrar(String valor) {
         try {
             DefaultTableModel modelo;
-            Cliente clilis = new Cliente();
-            modelo = clilis.datosvalmes(valor);
+            Vales clilis = new Vales();
+            modelo = clilis.val_nofir(valor);
             this.tabmes.setModel(modelo);
 
         } catch (Exception e) {
@@ -79,8 +93,8 @@ public class frmLisVal extends javax.swing.JInternalFrame {
     void mostrar1(String valor) {
         try {
             DefaultTableModel modelo;
-            Cliente clilis = new Cliente();
-            modelo = clilis.datosgas(valor);
+            Vales clilis = new Vales();
+            modelo = clilis.val_ent(valor);
             this.tbliscli.setModel(modelo);
 
         } catch (Exception e) {
@@ -94,7 +108,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
     public void visualizar(JTable tabla, String valor) {
 
         tabla.setDefaultRenderer(Object.class, new Render());
-        DefaultTableModel dt = new DefaultTableModel(new String[]{"Codigo", "Apellidos y Nombres", "Fecha Vale", "Seleccionar"}, 0) {
+        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Codigo", "Fecha Vale", "Seleccionar"}, 0) {
 
             Class[] types = new Class[]{
                 java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
@@ -112,13 +126,13 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
         dao = new Vales();
         mValacu vo = new mValacu();
-        ArrayList<mValacu> list = dao.Listar_Valacumulado(valor);
+        ArrayList<mValacu> list = dao.Lis_Valfir(valor);
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 Object fila[] = new Object[4];
                 vo = list.get(i);
                 fila[0] = vo.getIddetval();
-                fila[1] = vo.getApenom();
+                fila[1] = vo.getCod();
                 fila[2] = vo.getFecvale();
                 fila[3] = btn_quitar;
                 dt.addRow(fila);
@@ -129,7 +143,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         tabla.getColumnModel().getColumn(0).setPreferredWidth(20);
         tabla.getColumnModel().getColumn(1).setPreferredWidth(150);
     }
-    Cliente dao1;
+    Vales dao1;
     private boolean[] editable1 = {false, false, false, false, false};
 
     public void visualizar1(JTable tabla, String valor) {
@@ -151,9 +165,9 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         };
         btn_quitar1.setName("q1");
 
-        dao1 = new Cliente();
+        dao1 = new Vales();
         mValacu vo = new mValacu();
-        ArrayList<mValacu> list = dao1.Listar_Valfirmas(valor);
+        ArrayList<mValacu> list = dao1.Lis_valnofir(valor);
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
                 Object fila[] = new Object[5];
@@ -162,10 +176,8 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                 fila[1] = vo.getApenom();
                 fila[2] = vo.getDnicli();
                 fila[3] = vo.getCod();
-                if (vo.getFir() == 0) {
+                if (vo.getEstdetval().equals("0")) {
                     fila[4] = btn_quitar1;
-                } else {
-                    fila[4] = "ya firmo";
                 }
 
                 dt.addRow(fila);
@@ -213,6 +225,8 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         tbliscli = new javax.swing.JTable();
         btnregpro2 = new javax.swing.JButton();
         btnregpro3 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        lbdin = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -235,7 +249,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Codigo", "Apellidos y Nombres", "Fecha Vale", "Accion"
+                "Id", "Codigo", "Fecha Vale", "Accion"
             }
         ));
         tblisbol.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -247,6 +261,11 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
         txtidven.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
 
+        txtvaldni.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtvaldniActionPerformed(evt);
+            }
+        });
         txtvaldni.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtvaldniKeyPressed(evt);
@@ -411,6 +430,10 @@ public class frmLisVal extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel1.setText("Dinero en juego:");
+
+        lbdin.setText("jLabel2");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -419,47 +442,56 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(cbomes, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtcli, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnregpro1))
+                        .addGap(10, 10, 10)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel6)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtvaldni, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addComponent(txtidven, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(56, 56, 56)
-                                .addComponent(btnven)
-                                .addGap(18, 18, 18)
-                                .addComponent(btneli))
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtvaldni, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(26, 26, 26)
+                                        .addComponent(txtidven, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(56, 56, 56)
+                                        .addComponent(btnven)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btneli))
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtcodval, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(98, 98, 98)
+                                        .addComponent(btnregpro2)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnregpro3)
+                                        .addGap(60, 60, 60)
+                                        .addComponent(lbcodcli, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
+                                .addComponent(jLabel4)
                                 .addGap(18, 18, 18)
-                                .addComponent(txtcodval, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(98, 98, 98)
-                                .addComponent(btnregpro2)
+                                .addComponent(cbomes, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnregpro3)
-                                .addGap(60, 60, 60)
-                                .addComponent(lbcodcli, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                                .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtcli, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnregpro1)))
+                        .addContainerGap())))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(57, 57, 57)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbdin, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -502,7 +534,11 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                         .addComponent(btnregpro3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(26, 26, 26)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbdin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -515,7 +551,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
@@ -541,10 +577,10 @@ public class frmLisVal extends javax.swing.JInternalFrame {
             txtvaldni.requestFocus();
             txtvaldni.setSelectionStart(0);
             txtvaldni.setSelectionEnd(txtvaldni.getText().length());
-            Cliente prolis = new Cliente();
-            txtcli.setText(prolis.obtapenom(valor1));
+            Vales prolis = new Vales();
+            txtcli.setText(prolis.rec_apenom(valor1));
             txtcli.setDisabledTextColor(Color.blue);
-            lbcodcli.setText(prolis.obtacodcli(valor1));
+            lbcodcli.setText(prolis.rec_codcli(valor1));
 
             if (txtcli.getText().length() < 2) {
                 txtvaldni.requestFocus();
@@ -589,6 +625,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                             tabladet.addRow(dato);
                             frmLisVal.tbvalagr.setModel(tabladet);
                         }
+                        CanValAcu();
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
                     }
@@ -630,16 +667,14 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                 for (int i = 0; i < frmLisVal.tbvalagr.getRowCount(); i++) {
                     mDetVal Sql = new mDetVal();
                     Vales insdv = new Vales();
-                    SimpleDateFormat formateador = new SimpleDateFormat(
-                            "dd 'de' MMMM 'de' yyyy", new Locale("ES"));
-                    Date fechaDate = new Date();
-                    String fec = formateador.format(fechaDate);
+                    LocalDate localDate = LocalDate.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+                    String fec = localDate.format(formatter);
                     Sql.setFecdetval(fec);
-                    Sql.setEstdetval("0");
+                    Sql.setEstdetval("2");
                     Sql.setResponsable(cant);
-                    Sql.setFirma(1);
                     Sql.setIddetval(Integer.parseInt(tbvalagr.getValueAt(i, 0).toString()));
-                    insdv.actvalacu(Sql);
+                    insdv.act_valfir(Sql);
                 }
 
                 DefaultTableModel modelo = (DefaultTableModel) tbvalagr.getModel();
@@ -680,14 +715,14 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                 sSql.setMesvale(cbomes.getSelectedIndex());
                 sSql.setAnovale(cboano.getSelectedItem().toString());
                 sSql.setIdcli(Integer.parseInt(lbcodcli.getText()));
-                if (insdv.vervale(sSql).equals("")) {
+                if (insdv.ver_vale(sSql).equals("")) {
                     mDetVal Sql1 = new mDetVal();
                     Sql1.setIdcli(Integer.parseInt(lbcodcli.getText()));
                     Sql1.setCoddetval(txtcodval.getText());
-                    Sql1.setEstdetval("1");
+                    Sql1.setEstdetval("0");
                     Sql1.setMesvale(cbomes.getSelectedIndex());
                     Sql1.setAnovale(cboano.getSelectedItem().toString());
-                    insdv.insertar(Sql1);
+                    insdv.ins_detval(Sql1);
                     txtvaldni.requestFocus();
                     txtvaldni.setSelectionStart(0);
                     txtvaldni.setSelectionEnd(txtvaldni.getText().length());
@@ -761,10 +796,11 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                             mDetVal sSql = new mDetVal();
                             Vales emp = new Vales();
                             sSql.setIddetval(Integer.parseInt("" + tabmes.getValueAt(rown, 0)));
-                            sSql.setFirma(1);
-                            emp.actfir(sSql);
+                            sSql.setEstdetval("1");
+                            emp.act_valnofir(sSql);
                             visualizar1(tabmes, txtvaldni.getText());
                             visualizar(tblisbol, txtvaldni.getText());
+                            CanValAcu();
                         }
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
@@ -783,6 +819,10 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         pro.setVisible(true);
     }//GEN-LAST:event_btnregpro3ActionPerformed
 
+    private void txtvaldniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtvaldniActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtvaldniActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btneli;
     private javax.swing.JButton btnregpro1;
@@ -792,6 +832,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> cboano;
     private javax.swing.JComboBox<String> cbomes;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
@@ -801,6 +842,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel lbcodcli;
+    private javax.swing.JLabel lbdin;
     private javax.swing.JTable tabmes;
     public static javax.swing.JTable tblisbol;
     private javax.swing.JTable tbliscli;

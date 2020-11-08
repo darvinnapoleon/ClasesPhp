@@ -12,17 +12,17 @@ public class mBidon {
     private int idcli;
     private String fecencbid;
     private String fecalmbid;
-    private int estbid;
+    private int canbid;
 
     public mBidon() {
     }
 
-    public mBidon(int idbid, int idcli, String fecencbid, String fecalmbid, int estbid) {
+    public mBidon(int idbid, int idcli, String fecencbid, String fecalmbid, int canbid) {
         this.idbid = idbid;
         this.idcli = idcli;
         this.fecencbid = fecencbid;
         this.fecalmbid = fecalmbid;
-        this.estbid = estbid;
+        this.canbid = canbid;
     }
 
     public int getIdbid() {
@@ -57,14 +57,14 @@ public class mBidon {
         this.fecalmbid = fecalmbid;
     }
 
-    public int getEstbid() {
-        return estbid;
+    public int getCanbid() {
+        return canbid;
     }
 
-    public void setEstbid(int estbid) {
-        this.estbid = estbid;
+    public void setCanbid(int canbid) {
+        this.canbid = canbid;
     }
 
-    
+   
     
 }

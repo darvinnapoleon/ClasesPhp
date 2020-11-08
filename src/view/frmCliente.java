@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
@@ -17,12 +18,61 @@ import javax.swing.table.DefaultTableModel;
  */
 public class frmCliente extends javax.swing.JInternalFrame {
 
+    public JButton btn_edi = new JButton("Editar");
+    int rown = -1;
+
     public frmCliente() {
         initComponents();
-        mostrar("");
-        bloquear();
         idcli.setVisible(false);
+        idcli1.setVisible(false);
+        String valor1 = this.txtbusca.getText().trim();
+        lis_cli(tbcli, valor1);
 
+    }
+    private boolean[] editable = {false, false, false, false, false, false};
+    Cliente dao;
+
+    public void lis_cli(JTable tabla, String valor) {
+
+        tabla.setDefaultRenderer(Object.class, new Render());
+        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Apellidos", "Nombres", "DNI", "Telefono", "Selecciona"}, 0) {
+
+            Class[] types = new Class[]{
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class,
+                java.lang.Object.class, java.lang.Object.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types[columnIndex];
+            }
+
+            public boolean isCellEditable(int row, int column) {
+                return editable[column];
+            }
+        };
+        btn_edi.setName("q");
+
+        dao = new Cliente();
+        mCliente vo = new mCliente();
+        ArrayList<mCliente> list = dao.Lis_Cli(valor);
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                Object fila[] = new Object[6];
+                vo = list.get(i);
+                fila[0] = vo.getIdcli();
+                fila[1] = vo.getApecli();
+                fila[2] = vo.getNomcli();
+                fila[3] = vo.getDnicli();
+                fila[4] = vo.getTelcli();
+                fila[5] = btn_edi;
+                dt.addRow(fila);
+            }
+        }
+        tabla.setModel(dt);
+        tabla.setRowHeight(20);
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(7);
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(100);
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(80);
     }
 
     void accionNuevo() {
@@ -30,39 +80,8 @@ public class frmCliente extends javax.swing.JInternalFrame {
         txtnomcli.setText("");
         txttelcli.setText("");
         txtdnicli.setText("");
-        mes.setCalendar(null);
         idcli.setText("");
-    }
-
-    void bloquear() {
-        this.txtapecli.setEnabled(false);
-        this.txtnomcli.setEnabled(false);
-        this.txttelcli.setEnabled(false);
-        this.txtdnicli.setEnabled(false);
-        this.btnGua.setEnabled(false);
-        this.btnCan.setEnabled(false);
-        this.btnAct.setEnabled(false);
-        this.btnNue.setEnabled(true);
-        this.mes.setEnabled(false);
-    }
-
-    void desbloquear() {
-        this.txtapecli.setEnabled(true);
-        this.txtnomcli.setEnabled(true);
-        this.txttelcli.setEnabled(true);
-        this.txtdnicli.setEnabled(true);
-        this.mes.setEnabled(true);
-    }
-
-    void mostrar(String valor) {
-        try {
-            DefaultTableModel modelo;
-            Cliente cat = new Cliente();
-            modelo = cat.datos(valor);
-            this.tbcli.setModel(modelo);
-        } catch (Exception e) {
-            JOptionPane.showConfirmDialog(null, e);
-        }
+        idcli1.setText("");
     }
 
     /**
@@ -76,27 +95,20 @@ public class frmCliente extends javax.swing.JInternalFrame {
 
         jPanel1 = new javax.swing.JPanel();
         idcli = new javax.swing.JLabel();
-        eticod1 = new javax.swing.JLabel();
         txtbusca = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
         btnNue = new javax.swing.JButton();
-        btnGua = new javax.swing.JButton();
-        btnAct = new javax.swing.JButton();
-        btnCan = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbcli = new javax.swing.JTable();
-        jPanel3 = new javax.swing.JPanel();
-        txttelcli = new javax.swing.JTextField();
-        txtnomcli = new javax.swing.JTextField();
-        txtapecli = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        txtapecli = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtnomcli = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         txtdnicli = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        mes = new com.toedter.calendar.JDateChooser();
-        jLabel1 = new javax.swing.JLabel();
+        txttelcli = new javax.swing.JTextField();
+        idcli1 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -115,9 +127,7 @@ public class frmCliente extends javax.swing.JInternalFrame {
 
         idcli.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 255)));
 
-        eticod1.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        eticod1.setText("Apellidos");
-
+        txtbusca.setToolTipText("");
         txtbusca.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtbuscaKeyPressed(evt);
@@ -136,33 +146,6 @@ public class frmCliente extends javax.swing.JInternalFrame {
         btnNue.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNueActionPerformed(evt);
-            }
-        });
-
-        btnGua.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        btnGua.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/Save.png"))); // NOI18N
-        btnGua.setText("Guardar");
-        btnGua.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuaActionPerformed(evt);
-            }
-        });
-
-        btnAct.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        btnAct.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/if_Refresh_132740.png"))); // NOI18N
-        btnAct.setText("Actualizar");
-        btnAct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActActionPerformed(evt);
-            }
-        });
-
-        btnCan.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        btnCan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/Delete.png"))); // NOI18N
-        btnCan.setText("Cancelar");
-        btnCan.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCanActionPerformed(evt);
             }
         });
 
@@ -197,59 +180,31 @@ public class frmCliente extends javax.swing.JInternalFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 570, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(btnNue)
-                        .addGap(36, 36, 36)
-                        .addComponent(btnGua, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCan, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(btnAct)
-                        .addGap(31, 31, 31))))
+                .addComponent(jScrollPane1)
+                .addContainerGap())
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(282, 282, 282)
+                .addComponent(btnNue)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNue)
-                    .addComponent(btnCan, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnGua, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAct))
-                .addGap(101, 101, 101))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnNue)
+                .addGap(119, 119, 119))
         );
 
-        jPanel3.setBackground(new java.awt.Color(153, 153, 153));
+        jLabel2.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
+        jLabel2.setText("Apellidos");
 
-        txttelcli.addActionListener(new java.awt.event.ActionListener() {
+        txtapecli.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txttelcliActionPerformed(evt);
+                txtapecliActionPerformed(evt);
             }
         });
-        txttelcli.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txttelcliKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txttelcliKeyTyped(evt);
-            }
-        });
-
-        txtnomcli.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtnomcliKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtnomcliKeyTyped(evt);
-            }
-        });
-
         txtapecli.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtapecliKeyPressed(evt);
@@ -259,14 +214,22 @@ public class frmCliente extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        jLabel4.setText("Fec. Emisión");
-
         jLabel3.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         jLabel3.setText("Nombres");
 
-        jLabel2.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        jLabel2.setText("Apellidos");
+        txtnomcli.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtnomcliActionPerformed(evt);
+            }
+        });
+        txtnomcli.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtnomcliKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtnomcliKeyTyped(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         jLabel5.setText("Dni");
@@ -283,122 +246,81 @@ public class frmCliente extends javax.swing.JInternalFrame {
         jLabel6.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         jLabel6.setText("Telefono");
 
-        mes.setDateFormatString("dd-MM-yyyy");
-        mes.addKeyListener(new java.awt.event.KeyAdapter() {
+        txttelcli.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txttelcliActionPerformed(evt);
+            }
+        });
+        txttelcli.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                mesKeyPressed(evt);
+                txttelcliKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txttelcliKeyTyped(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(18, 18, 18)
-                                .addComponent(mes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5))
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGap(20, 20, 20)
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtdnicli, javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(txtapecli, javax.swing.GroupLayout.Alignment.TRAILING)))
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txttelcli))))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtnomcli, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
-                        .addGap(22, 22, 22))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(0, 0, Short.MAX_VALUE))))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtapecli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtnomcli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtdnicli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel4)
-                    .addComponent(mes, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txttelcli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
-        );
-
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/gas.jpg"))); // NOI18N
+        idcli1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 255)));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(98, 98, 98)
-                        .addComponent(jLabel1)
-                        .addGap(44, 44, 44)
-                        .addComponent(idcli, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 282, Short.MAX_VALUE)
-                        .addComponent(eticod1)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtbusca, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(147, 147, 147))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 120, Short.MAX_VALUE)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtdnicli, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel6)
+                                .addGap(18, 18, 18)
+                                .addComponent(txttelcli, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(txtbusca)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtapecli, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtnomcli, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(idcli1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(22, 22, 22)
+                                .addComponent(idcli, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(8, 8, 8)))))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(idcli, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtbusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(eticod1)))
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtbusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtapecli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtnomcli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtdnicli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel6)
+                        .addComponent(txttelcli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(idcli, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(idcli1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -431,187 +353,40 @@ public class frmCliente extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_txtbuscaKeyTyped
 
-    private void btnGuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuaActionPerformed
-
-        if (this.txtapecli.getText().length() == 0) {
-            JOptionPane.showMessageDialog(null, "Ingresar Apellidos");
-            this.txtapecli.requestFocus();
-            return;
-        }
-
-        if (this.txtnomcli.getText().length() == 0) {
-            JOptionPane.showMessageDialog(null, "Ingresar Nombres");
-            this.txtnomcli.requestFocus();
-            return;
-        }
-        if (txtdnicli.getText().length() == 0 || txtdnicli.getText().equals(0) || txtdnicli.getText().length() != 8) {
-            JOptionPane.showMessageDialog(null, "Ingresar Dni");
-            this.txtdnicli.requestFocus();
-            return;
-        }
-        if (mes.getCalendar() == null) {
-            JOptionPane.showMessageDialog(null, "Ingresar Fecha Emision");
-            this.mes.requestFocus();
-            return;
-        }
-        if (txttelcli.getText().length() == 0 || txttelcli.getText().equals(0) || txttelcli.getText().length() != 9) {
-            JOptionPane.showMessageDialog(null, "Ingresar Telefono");
-            this.txttelcli.requestFocus();
-            return;
-        } else {
-
-            mCliente sSql = new mCliente();
-            Cliente emp = new Cliente();
-            sSql.setDnicli(txtdnicli.getText());
-            if (emp.verificadni(sSql) == "") {
-                sSql.setApecli(txtapecli.getText());
-                sSql.setNomcli(txtnomcli.getText());
-                DateFormat fechaHora = new SimpleDateFormat("dd-MM-yyyy");
-                String convertido = fechaHora.format(mes.getDate());
-                sSql.setFeccli(convertido);
-                sSql.setTelcli(txttelcli.getText());
-                if (emp.insertar(sSql)) {
-                    mBidon sSql1 = new mBidon();
-                    Bidon bid = new Bidon();
-                    sSql1.setIdcli(1);
-                    bid.insbidon(sSql1);
-                    JOptionPane.showMessageDialog(rootPane, "Cliente Registrado");
-                    accionNuevo();
-                    this.txtapecli.requestFocus();
-                    mostrar("");
-                }
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "El cliente ya esta registrado");
-            }
-
-        }
-    }//GEN-LAST:event_btnGuaActionPerformed
-
     private void btnNueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNueActionPerformed
         // TODO add your handling code here:
-        desbloquear();
-        this.btnGua.setEnabled(true);
-        this.btnCan.setEnabled(true);
         accionNuevo();
         this.txtapecli.requestFocus();
     }//GEN-LAST:event_btnNueActionPerformed
 
-    private void btnCanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCanActionPerformed
-        // TODO add your handling code here:
-        accionNuevo();
-        bloquear();
-        this.txtbusca.requestFocus();
-    }//GEN-LAST:event_btnCanActionPerformed
-
     private void tbcliMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbcliMouseClicked
         // TODO add your handling code here:
-        JPopupMenu popupmenu = new JPopupMenu();
-        JMenuItem menuItem1 = new JMenuItem("Eliminar");
-        menuItem1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int col = tbcli.getSelectedRow();
-                if (col == -1) {
-                    JOptionPane.showMessageDialog(null, "Selecciona un Dato");
-                } else {
-                    int YesOrNo = JOptionPane.showConfirmDialog(null, "Deseas eliminar el registro", "Confirma el Mensaje", JOptionPane.YES_NO_OPTION);
-                    if (YesOrNo == 0) {
-                        idcli.setText(tbcli.getModel().getValueAt(col, 0).toString());
-                        mBidon sSql1 = new mBidon();
-                        Bidon bid = new Bidon();
-                        sSql1.setIdcli(Integer.parseInt(idcli.getText()));
-                        bid.eliminar1(sSql1);
-                        mCliente sSql = new mCliente();
-                        Cliente emp = new Cliente();
-                        sSql.setIdcli(Integer.parseInt(idcli.getText()));
-                        if (emp.eliminar(sSql)) {
-                            btnGua.setEnabled(false);
-                            mostrar("");
-                            accionNuevo();
-                            bloquear();
-                        }
+        rown = tbcli.rowAtPoint(evt.getPoint());
+        int column = tbcli.getColumnModel().getColumnIndexAtX(evt.getX());
+        int row = evt.getY() / tbcli.getRowHeight();
+        int po = evt.getY();
+        if (row < tbcli.getRowCount() && row >= 0 && column < tbcli.getColumnCount() && column >= 0) {
+            Object value = tbcli.getValueAt(row, column);
+            if (value instanceof JButton) {
+                ((JButton) value).doClick();
+                JButton boton = (JButton) value;
+                if (boton.getName().equals("q")) {
+                    try {
+                        idcli1.setText("a");
+                        idcli.setText(tbcli.getModel().getValueAt(rown, 0).toString());
+                        txtapecli.setText(tbcli.getModel().getValueAt(rown, 1).toString());
+                        txtnomcli.setText(tbcli.getModel().getValueAt(rown, 2).toString());
+                        txtdnicli.setText(tbcli.getModel().getValueAt(rown, 3).toString());
+                        txttelcli.setText(tbcli.getModel().getValueAt(rown, 4).toString());
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
                     }
                 }
             }
-        });
-        JMenuItem menuItem2 = new JMenuItem("Modificar");
-        menuItem2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int col = tbcli.getSelectedRow();
-                if (col == -1) {
-                    JOptionPane.showMessageDialog(null, "Selecciona un Dato");
-                } else {
 
-                    txtapecli.setEnabled(true);
-                    txtnomcli.setEnabled(true);
-                    txttelcli.setEnabled(true);
-                    txtdnicli.setEnabled(true);
-                    mes.setEnabled(true);
-                    btnAct.setEnabled(true);
-                    btnCan.setEnabled(true);
-                    btnGua.setEnabled(false);
-                    Cliente cli3 = new Cliente();
-                    idcli.setText(tbcli.getModel().getValueAt(col, 0).toString());
-                    txtapecli.setText(tbcli.getModel().getValueAt(col, 1).toString());
-                    txtnomcli.setText(tbcli.getModel().getValueAt(col, 2).toString());
-                    txtdnicli.setText(tbcli.getModel().getValueAt(col, 3).toString());
-                    mes.setDate(cli3.convert(tbcli.getModel().getValueAt(col, 4).toString()));
-                    txttelcli.setText(tbcli.getModel().getValueAt(col, 5).toString());
+        }
 
-                }
-            }
-        });
-        popupmenu.add(menuItem1);
-        popupmenu.add(menuItem2);
-        tbcli.setComponentPopupMenu(popupmenu);
     }//GEN-LAST:event_tbcliMouseClicked
-
-    private void btnActActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActActionPerformed
-        // TODO add your handling code here:
-        if (this.txtapecli.getText().length() == 0) {
-            JOptionPane.showMessageDialog(null, "Ingresar Apellidos");
-            this.txtapecli.requestFocus();
-            return;
-        }
-        if (this.txtnomcli.getText().length() == 0) {
-            JOptionPane.showMessageDialog(null, "Ingresar Nombres");
-            this.txtnomcli.requestFocus();
-            return;
-        }
-        if (txtdnicli.getText().length() == 0 || txtdnicli.getText().equals(0) || txtdnicli.getText().length() != 8) {
-            JOptionPane.showMessageDialog(null, "Ingresar Dni");
-            this.txtdnicli.requestFocus();
-            return;
-        }
-        if (mes.getCalendar() == null) {
-            JOptionPane.showMessageDialog(null, "Ingresar Fecha Emision");
-            this.mes.requestFocus();
-            return;
-        }
-        if (txttelcli.getText().length() == 0 || txttelcli.getText().equals(0) || txttelcli.getText().length() != 9) {
-            JOptionPane.showMessageDialog(null, "Ingresar Telefono");
-            this.txttelcli.requestFocus();
-            return;
-        } else {
-            mCliente sSql = new mCliente();
-            Cliente emp = new Cliente();
-            sSql.setIdcli(Integer.parseInt(idcli.getText()));
-            sSql.setApecli(txtapecli.getText());
-            sSql.setNomcli(txtnomcli.getText());
-            sSql.setDnicli(txtdnicli.getText());
-            DateFormat fechaHora = new SimpleDateFormat("dd-MM-yyyy");
-                String convertido = fechaHora.format(mes.getDate());
-                sSql.setFeccli(convertido);
-            sSql.setTelcli(txttelcli.getText());
-            if (emp.actualizar(sSql)) {
-                JOptionPane.showMessageDialog(rootPane, "Cliente Actualizado");
-                mostrar("");
-                accionNuevo();
-                bloquear();
-            }
-        }
-    }//GEN-LAST:event_btnActActionPerformed
 
     private void formCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_formCaretPositionChanged
         // TODO add your handling code here:
@@ -632,7 +407,56 @@ public class frmCliente extends javax.swing.JInternalFrame {
 
     private void txttelcliKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttelcliKeyPressed
         // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (txtapecli.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ingresar apellidos");
+                this.txtapecli.requestFocus();
+                return;
+            }
+            if (txtnomcli.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ingresar nombre");
+                this.txtnomcli.requestFocus();
+                return;
+            }
+            if (txtdnicli.getText().isEmpty() || txtdnicli.getText().length() != 8) {
+                JOptionPane.showMessageDialog(null, "ingresar dni");
+                this.txtdnicli.requestFocus();
+                return;
+            }
+            if (txttelcli.getText().isEmpty() || txttelcli.getText().length() != 9) {
+                JOptionPane.showMessageDialog(null, "ingresar telefono");
+                this.txttelcli.requestFocus();
+                return;
+            } else {
+                mCliente sSql = new mCliente();
+                Cliente cli = new Cliente();
+                if (idcli1.getText().equals("a")) {
+                    sSql.setApecli(txtapecli.getText());
+                    sSql.setNomcli(txtnomcli.getText());
+                    sSql.setDnicli(txtdnicli.getText());
+                    sSql.setTelcli(txttelcli.getText());
+                    sSql.setIdcli(Integer.parseInt(idcli.getText()));
+                    cli.act_cli(sSql);
+                    lis_cli(tbcli, txtbusca.getText());
+                } else {
+                    sSql.setApecli(txtapecli.getText());
+                    sSql.setNomcli(txtnomcli.getText());
+                    sSql.setDnicli(txtdnicli.getText().trim());
+                    sSql.setTelcli(txttelcli.getText());
+                    if (cli.verificadni(sSql).equals(txtdnicli.getText().trim())) {
+                        JOptionPane.showMessageDialog(rootPane, "El cliente ya esta registrado");
+                    } else {
+                        cli.ins_cli(sSql);
+                        mBidon sSql1 = new mBidon();
+                        Bidon bid = new Bidon();
+                        sSql1.setIdcli(1);
+                        bid.ins_bid(sSql1);
+                        lis_cli(tbcli, "");
+                    }
 
+                }
+            }
+        }
     }//GEN-LAST:event_txttelcliKeyPressed
 
     private void txttelcliKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttelcliKeyTyped
@@ -654,7 +478,7 @@ public class frmCliente extends javax.swing.JInternalFrame {
     private void txtdnicliKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdnicliKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            this.mes.requestFocus();
+            this.txttelcli.requestFocus();
         }
     }//GEN-LAST:event_txtdnicliKeyPressed
 
@@ -670,42 +494,37 @@ public class frmCliente extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txttelcliActionPerformed
 
-    private void mesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_mesKeyPressed
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            this.txttelcli.requestFocus();
-        }
-
-    }//GEN-LAST:event_mesKeyPressed
-
     private void txtbuscaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscaKeyPressed
         // TODO add your handling code here:
-         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-        mostrar(this.txtbusca.getText().trim());
-        txtbusca.requestFocus();
-        txtbusca.setSelectionStart(0);
-        txtbusca.setSelectionEnd(txtbusca.getText().length());}
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            String valor1 = this.txtbusca.getText().trim();
+            lis_cli(tbcli, valor1);
+            txtbusca.requestFocus();
+            txtbusca.setSelectionStart(0);
+            txtbusca.setSelectionEnd(txtbusca.getText().length());
+        }
     }//GEN-LAST:event_txtbuscaKeyPressed
+
+    private void txtapecliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtapecliActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtapecliActionPerformed
+
+    private void txtnomcliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnomcliActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtnomcliActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAct;
-    private javax.swing.JButton btnCan;
-    private javax.swing.JButton btnGua;
     private javax.swing.JButton btnNue;
-    private javax.swing.JLabel eticod1;
     private javax.swing.JLabel idcli;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel idcli1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private com.toedter.calendar.JDateChooser mes;
     private javax.swing.JTable tbcli;
     private javax.swing.JTextField txtapecli;
     private javax.swing.JTextField txtbusca;

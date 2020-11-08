@@ -9,9 +9,11 @@ import model.*;
 import com.mysql.jdbc.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -25,25 +27,23 @@ public class Bidon {
     private Connection con = oconex.oConexion();
     private String sql = "";
     private String sql1 = "";
-
- 
-
-    public boolean actualizar(mBidon sSql) {
+    
+    public boolean enc_bid(mBidon sSql) {
         int cod = sSql.getIdcli();
         String cap = "";
         int desfinal;
-        String consul = "SELECT * FROM bidon WHERE  idcli='" + cod + "'";
+        String consul = "SELECT estbid FROM bidon WHERE  idcli='" + cod + "'";
         try {
 
             Statement st = (Statement) con.createStatement();
             ResultSet rs = st.executeQuery(consul);
             while (rs.next()) {
-                cap = rs.getString(5);
+                cap = rs.getString(1);
             }
         } catch (Exception e) {
         }
 
-        desfinal = Integer.parseInt(cap) + sSql.getEstbid();
+        desfinal = Integer.parseInt(cap) + sSql.getCanbid();
         String modi = "UPDATE bidon SET fecencbid=?, estbid=? WHERE idcli ='" + cod + "'";
         try {
             PreparedStatement pst = (PreparedStatement) con.prepareStatement(modi);
@@ -55,10 +55,10 @@ public class Bidon {
         return true;
     }
 
-    public boolean actualizarbid(mBidon sSql) {
+    public boolean rec_bid(mBidon sSql) {
         int cod = sSql.getIdcli();
         int desfinal;
-        desfinal = sSql.getEstbid() - 1;
+        desfinal = sSql.getCanbid() - 1;
         sql = "UPDATE bidon SET fecalmbid=?, estbid=? WHERE idcli ='" + cod + "'";
         try {
             PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
@@ -77,7 +77,7 @@ public class Bidon {
         }
     }
 
-    public boolean insbidon(mBidon sSql) {
+    public boolean ins_bid(mBidon sSql) {
         String cap = "";
         String consul = "SELECT MAX(idcli) FROM cliente";
         try {
@@ -108,41 +108,58 @@ public class Bidon {
 
         }
     }
-
-    public boolean eliminar(mBidon sSql) {
-        sql = "DELETE FROM bidon WHERE idbid = ?";
-        try {
-            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
-            pst.setInt(1, sSql.getIdbid());
-            int n = pst.executeUpdate();
-            if (n != 0) {
-                return true;
-            } else {
-                return false;
+    public ArrayList<mCliente> Lis_Cli(String valor){
+        ArrayList<mCliente> list = new ArrayList<mCliente>();
+            sql = "SELECT  idcli, apecli, nomcli FROM cliente WHERE apecli LIKE '%" + valor + "%' ORDER BY idcli DESC";
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+      
+        try{
+             ps = (PreparedStatement) con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while(rs.next()){
+                mCliente vo = new mCliente();
+                vo.setIdcli(rs.getInt(1));
+                vo.setApecli(rs.getString(2));
+                vo.setNomcli(rs.getString(3));
+                list.add(vo);
             }
-        } catch (Exception e) {
-            JOptionPane.showConfirmDialog(null, e);
-
-            return false;
-
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+        }finally{
+            try{
+                ps.close();
+                rs.close();
+    
+            }catch(Exception ex){}
         }
+        return list;
     }
-    public boolean eliminar1(mBidon sSql) {
-        sql = "DELETE FROM bidon WHERE idcli = ?";
+    public DefaultTableModel bid_enc(String valor) {
+        Cliente cli = new Cliente();
+        DefaultTableModel modelo;
+        String[] titulos = {"Codigo", "Apellidos", "Nombres", "Dni", "Can. Bidon(es)"};
+        String[] registro = new String[5];
+        modelo = new DefaultTableModel(null, titulos);
+
+        sql = "SELECT c.idcli,c.apecli, c.nomcli,c.dnicli,b.estbid FROM cliente AS c INNER JOIN bidon AS b ON c.idcli=b.idcli WHERE apecli LIKE '%" + valor + "%' AND b.estbid > 0";
+        Statement st;
         try {
-            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
-            pst.setInt(1, sSql.getIdcli());
-            int n = pst.executeUpdate();
-            if (n != 0) {
-                return true;
-            } else {
-                return false;
+            st = (Statement) con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                registro[0] = rs.getString("idcli");
+                registro[1] = rs.getString("apecli");
+                registro[2] = rs.getString("nomcli");
+                registro[3] = rs.getString("dnicli");
+                registro[4] = rs.getString("estbid");
+                modelo.addRow(registro);
             }
-        } catch (Exception e) {
-            JOptionPane.showConfirmDialog(null, e);
-
-            return false;
-
+        } catch (SQLException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return modelo;
     }
 }

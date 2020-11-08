@@ -16,11 +16,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -28,39 +33,71 @@ import javax.swing.table.DefaultTableModel;
  * @author DARVIN
  */
 public class frmManBid extends javax.swing.JInternalFrame {
+     int rown = -1;
+    public JButton btn_enc = new JButton("Encargar");
 
     /**
      * Creates new form frmLisCli
      */
     public frmManBid() {
         initComponents();
-        mostrar("");
+      liscli(tblisbol, "");
+      
         mostrar1("");
-        popmenven();
          popmenven1();
         combosde();
         txtidven.setVisible(false);
-        txtcli1.setEnabled(false);
-        btnEnt.setEnabled(false);
-        cbonumbid.setEnabled(false);
-         txtcli1.setDisabledTextColor(Color.blue);
+        idcli.setVisible(false);
+        canbid.setEnabled(false);
     }
+    private boolean[] editable = {false, false, false, false};
+    Bidon dao;
 
-    void mostrar(String valor) {
-        try {
-            DefaultTableModel modelo;
-            Cliente cat = new Cliente();
-            modelo = cat.datoslocos(valor);
-            this.tblisbol.setModel(modelo);
-        } catch (Exception e) {
-            JOptionPane.showConfirmDialog(null, e);
+    public void liscli(JTable tabla, String valor) {
+
+        tabla.setDefaultRenderer(Object.class, new Render());
+        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Apellidos", "Nombres", "Selecciona"}, 0) {
+
+            Class[] types = new Class[]{
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types[columnIndex];
+            }
+
+            public boolean isCellEditable(int row, int column) {
+                return editable[column];
+            }
+        };
+        btn_enc.setName("q");
+
+        dao = new Bidon();
+        mCliente vo = new mCliente();
+        ArrayList<mCliente> list = dao.Lis_Cli(valor);
+        if (list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                Object fila[] = new Object[4];
+                vo = list.get(i);
+                fila[0] = vo.getIdcli();
+                fila[1] = vo.getApecli();
+                fila[2] = vo.getNomcli();
+                fila[3] = btn_enc;
+                dt.addRow(fila);
+            }
         }
+        tabla.setModel(dt);
+        tabla.setRowHeight(20);
+        tabla.getColumnModel().getColumn(0).setPreferredWidth(8);
+        tabla.getColumnModel().getColumn(1).setPreferredWidth(100);
+        tabla.getColumnModel().getColumn(2).setPreferredWidth(60);
     }
+    
 void mostrar1(String valor) {
         try {
             DefaultTableModel modelo;
-            Cliente cat = new Cliente();
-            modelo = cat.datos2(valor);
+            Bidon cat = new Bidon();
+            modelo = cat.bid_enc(valor);
             this.tblisbol1.setModel(modelo);
         } catch (Exception e) {
             JOptionPane.showConfirmDialog(null, e);
@@ -78,30 +115,6 @@ void mostrar1(String valor) {
         }
     }
 
-    void popmenven() {
-        JPopupMenu popupmenu = new JPopupMenu();
-        JMenuItem menuItem1 = new JMenuItem("Enviar");
-        menuItem1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int col = tblisbol.getSelectedRow();
-
-                if (col == -1) {
-                    JOptionPane.showMessageDialog(null, "selecciona una dato");
-                } else {
-                    txtcli1.setText(tblisbol.getValueAt(col, 1).toString() + " " + tblisbol.getValueAt(col, 2).toString());
-                    txtidven.setText(tblisbol.getValueAt(col, 0).toString());
-                    btnEnt.setEnabled(true);
-                    cbonumbid.setEnabled(true);
-                }
-
-            }
-        });
-
-        popupmenu.add(menuItem1);
-
-        tblisbol.setComponentPopupMenu(popupmenu);
-    }
        void popmenven1() {
         JPopupMenu popupmenu = new JPopupMenu();
         JMenuItem menuItem1 = new JMenuItem("Recepcionar");
@@ -109,22 +122,19 @@ void mostrar1(String valor) {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int col = tblisbol1.getSelectedRow();
-
                 if (col == -1) {
                     JOptionPane.showMessageDialog(null, "selecciona una dato");
                 } else {
-                    int YesOrNo = JOptionPane.showConfirmDialog(null, "Estas seguro de recepcionar bidon(es)", "confirma el mensaje", JOptionPane.YES_NO_OPTION);
-        if (YesOrNo == 0) {
+                    
             mBidon sSql = new mBidon();
             Bidon ven = new Bidon();
-            SimpleDateFormat formateador = new SimpleDateFormat(
-                    "dd 'de' MMMM 'de' yyyy", new Locale("ES"));
-            Date fechaDate = new Date();
-            String fec = formateador.format(fechaDate);
+                    LocalDate localDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+        String fec = localDate.format(formatter);
             sSql.setIdcli(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 0).toString()));
             sSql.setFecalmbid(fec);
-            sSql.setEstbid(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 4).toString()));
-            if (ven.actualizarbid(sSql)) {
+            sSql.setCanbid(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 4).toString()));
+            if (ven.rec_bid(sSql)) {
                 mostrar1("");
                 txtidven.setText("");
                
@@ -132,7 +142,7 @@ void mostrar1(String valor) {
         }
                 }
 
-            }
+            
         });
 
         popupmenu.add(menuItem1);
@@ -154,20 +164,14 @@ void mostrar1(String valor) {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblisbol = new javax.swing.JTable();
         txtidven = new javax.swing.JLabel();
-        txtcli1 = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        btnEnt = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        cbonumbid = new javax.swing.JComboBox<>();
         eticod1 = new javax.swing.JLabel();
         txtbusca = new javax.swing.JTextField();
-        eticod2 = new javax.swing.JLabel();
-        txtbusca1 = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblisbol1 = new javax.swing.JTable();
-        jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        canbid = new javax.swing.JTextField();
+        eticod2 = new javax.swing.JLabel();
+        idcli = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -191,35 +195,22 @@ void mostrar1(String valor) {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblisbol.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblisbolMouseClicked(evt);
+            }
+        });
+        tblisbol.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tblisbolKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblisbol);
 
         txtidven.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
 
-        txtcli1.setForeground(new java.awt.Color(0, 0, 255));
-
-        jLabel3.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        jLabel3.setText("encarga");
-
-        btnEnt.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        btnEnt.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/search.png"))); // NOI18N
-        btnEnt.setText("Registrar");
-        btnEnt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEntActionPerformed(evt);
-            }
-        });
-
-        jLabel4.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        jLabel4.setText("Señor:");
-
-        jLabel5.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        jLabel5.setText("bidon(es)");
-
-        cbonumbid.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
-        cbonumbid.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5" }));
-
         eticod1.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        eticod1.setText("Ingrese Apellidos:");
+        eticod1.setText("Apellidos:");
 
         txtbusca.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -227,18 +218,6 @@ void mostrar1(String valor) {
             }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtbuscaKeyTyped(evt);
-            }
-        });
-
-        eticod2.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
-        eticod2.setText("Ingrese Apellidos:");
-
-        txtbusca1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtbusca1KeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtbusca1KeyTyped(evt);
             }
         });
 
@@ -262,91 +241,79 @@ void mostrar1(String valor) {
         ));
         jScrollPane2.setViewportView(tblisbol1);
 
-        jLabel8.setFont(new java.awt.Font("Times New Roman", 3, 16)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 102, 0));
-        jLabel8.setText("Encargo de Bidones");
-
         jLabel9.setFont(new java.awt.Font("Times New Roman", 3, 16)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 102, 0));
         jLabel9.setText("Bidones encargados");
+
+        canbid.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                canbidKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                canbidKeyTyped(evt);
+            }
+        });
+
+        eticod2.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
+        eticod2.setText("Cantidad:");
+
+        idcli.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(txtcli1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbonumbid, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnEnt))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 575, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addGap(31, 31, 31)
-                                    .addComponent(eticod2)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(txtbusca1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 575, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 8, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addComponent(eticod1)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtbusca, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txtidven, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(138, 138, 138))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(268, 268, 268)
+                        .addGap(167, 167, 167)
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(259, 259, 259)
-                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(189, 189, 189)
+                        .addComponent(eticod2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(canbid, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(idcli, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(9, 9, 9)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(5, 5, 5)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(eticod1)
                         .addComponent(txtbusca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(txtidven, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtcli1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel5)
-                    .addComponent(cbonumbid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(btnEnt))
-                .addGap(21, 21, 21)
+                .addGap(16, 16, 16)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(canbid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(eticod2))
+                    .addComponent(idcli, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
                 .addComponent(jLabel9)
-                .addGap(12, 12, 12)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(eticod2)
-                    .addComponent(txtbusca1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(20, 20, 20)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                .addGap(11, 11, 11)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -354,7 +321,7 @@ void mostrar1(String valor) {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -363,30 +330,6 @@ void mostrar1(String valor) {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnEntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntActionPerformed
-        // TODO add your handling code here:
-        int YesOrNo = JOptionPane.showConfirmDialog(null, "Estas seguro que te encargan "+cbonumbid.getSelectedItem().toString()+" bidon(es)", "confirma el mensaje", JOptionPane.YES_NO_OPTION);
-        if (YesOrNo == 0) {
-            mBidon sSql = new mBidon();
-            Bidon ven = new Bidon();
-            SimpleDateFormat formateador = new SimpleDateFormat(
-                    "dd 'de' MMMM 'de' yyyy", new Locale("ES"));
-            Date fechaDate = new Date();
-            String fec = formateador.format(fechaDate);
-            sSql.setIdcli(Integer.parseInt(txtidven.getText()));
-            sSql.setFecencbid(fec);
-            sSql.setEstbid(Integer.parseInt(cbonumbid.getSelectedItem().toString()));
-            if (ven.actualizar(sSql) == true) {
-                mostrar1("");
-                txtcli1.setEnabled(false);
-                txtcli1.setText("");
-                txtidven.setText("");
-                btnEnt.setEnabled(false);
-                cbonumbid.setEnabled(false);
-            }
-        }
-    }//GEN-LAST:event_btnEntActionPerformed
 
     private void txtbuscaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscaKeyTyped
         // TODO add your handling code here:
@@ -399,39 +342,88 @@ void mostrar1(String valor) {
     private void txtbuscaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscaKeyPressed
         // TODO add your handling code here:
          if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-        mostrar(this.txtbusca.getText().trim());
+       liscli(tblisbol, txtbusca.getText());
+       mostrar1(txtbusca.getText());
          txtbusca.requestFocus();
         txtbusca.setSelectionStart(0);
         txtbusca.setSelectionEnd(txtbusca.getText().length());}
     }//GEN-LAST:event_txtbuscaKeyPressed
 
-    private void txtbusca1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbusca1KeyPressed
+    private void canbidKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_canbidKeyPressed
         // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            mostrar1(txtbusca1.getText().trim());
-        txtbusca1.requestFocus();
-        txtbusca1.setSelectionStart(0);
-        txtbusca1.setSelectionEnd(txtbusca1.getText().length());}
-    }//GEN-LAST:event_txtbusca1KeyPressed
+         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (canbid.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "ingresar cantidad");
+                this.canbid.requestFocus();
+                return;
+            }else{
+                mBidon sSql = new mBidon();
+            Bidon ven = new Bidon();
+                    LocalDate localDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+        String fec = localDate.format(formatter);
+            sSql.setIdcli(Integer.parseInt(idcli.getText()));
+            sSql.setFecencbid(fec);
+            sSql.setCanbid(Integer.parseInt(canbid.getText()));
+           canbid.setEnabled(false);
+            ven.enc_bid(sSql);
+                mostrar1("");
+                canbid.setText("");
+              
+            
+            }
+         }
+          
+        
+    }//GEN-LAST:event_canbidKeyPressed
 
-    private void txtbusca1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbusca1KeyTyped
+    private void canbidKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_canbidKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if (!(c < '0' || c > '9')) {
+         char c = evt.getKeyChar();
+        if ((c < '0' || c > '9')) {
             evt.consume();
         }
-    }//GEN-LAST:event_txtbusca1KeyTyped
+    }//GEN-LAST:event_canbidKeyTyped
+
+    private void tblisbolKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblisbolKeyPressed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_tblisbolKeyPressed
+
+    private void tblisbolMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblisbolMouseClicked
+        // TODO add your handling code here:
+         rown = tblisbol.rowAtPoint(evt.getPoint());
+        int column = tblisbol.getColumnModel().getColumnIndexAtX(evt.getX());
+        int row = evt.getY() / tblisbol.getRowHeight();
+        int po = evt.getY();
+        if (row < tblisbol.getRowCount() && row >= 0 && column < tblisbol.getColumnCount() && column >= 0) {
+            Object value = tblisbol.getValueAt(row, column);
+            if (value instanceof JButton) {
+                ((JButton) value).doClick();
+                JButton boton = (JButton) value;
+                String va1 = "" + tblisbol.getValueAt(rown, 0);
+                
+                if (boton.getName().equals("q")) {
+                    try {
+                        canbid.setEnabled(true);
+                        idcli.setText(va1);
+                        canbid.requestFocus();
+                        
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            }
+
+        }
+    }//GEN-LAST:event_tblisbolMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnEnt;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox<String> cbonumbid;
+    private javax.swing.JTextField canbid;
     private javax.swing.JLabel eticod1;
     private javax.swing.JLabel eticod2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel idcli;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -439,8 +431,6 @@ void mostrar1(String valor) {
     private javax.swing.JTable tblisbol;
     private javax.swing.JTable tblisbol1;
     private javax.swing.JTextField txtbusca;
-    private javax.swing.JTextField txtbusca1;
-    private javax.swing.JTextField txtcli1;
     private javax.swing.JLabel txtidven;
     // End of variables declaration//GEN-END:variables
 }

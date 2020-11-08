@@ -42,6 +42,7 @@ public class frmPrincipal extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         mencon = new javax.swing.JMenu();
+        mencv = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
         conrep = new javax.swing.JMenuItem();
 
@@ -96,6 +97,16 @@ public class frmPrincipal extends javax.swing.JFrame {
             }
         });
         jMenuBar1.add(mencon);
+
+        mencv.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/movimiento.JPG"))); // NOI18N
+        mencv.setText("MOVIMIENTO");
+        mencv.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        mencv.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mencvMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(mencv);
 
         jMenu2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/rep.png"))); // NOI18N
         jMenu2.setText("REPORTES");
@@ -157,6 +168,13 @@ public class frmPrincipal extends javax.swing.JFrame {
         forconrep.show();
     }//GEN-LAST:event_menconMouseClicked
 
+    private void mencvMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mencvMouseClicked
+        // TODO add your handling code here:
+        frmCom_Ven forconrep = new frmCom_Ven();
+        panfer.add(forconrep);
+        forconrep.show();
+    }//GEN-LAST:event_mencvMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -203,6 +221,7 @@ public class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenu mencon;
+    private javax.swing.JMenu mencv;
     public static javax.swing.JDesktopPane panfer;
     // End of variables declaration//GEN-END:variables
 }

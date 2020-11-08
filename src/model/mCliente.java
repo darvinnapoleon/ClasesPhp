@@ -15,20 +15,18 @@ public class mCliente {
     private String nomcli;
     private String dnicli;
     private String telcli;
-    private String feccli;
+
   
 
     public mCliente() {
     }
 
-    public mCliente(int idcli, String apecli, String nomcli, String dnicli, String telcli, String feccli) {
+    public mCliente(int idcli, String apecli, String nomcli, String dnicli, String telcli) {
         this.idcli = idcli;
         this.apecli = apecli;
         this.nomcli = nomcli;
         this.dnicli = dnicli;
         this.telcli = telcli;
-        this.feccli = feccli;
-       
     }
 
     public int getIdcli() {
@@ -71,14 +69,5 @@ public class mCliente {
         this.telcli = telcli;
     }
 
-    public String getFeccli() {
-        return feccli;
-    }
-
-    public void setFeccli(String feccli) {
-        this.feccli = feccli;
-    }
-
- 
-
+   
 }

@@ -9,6 +9,11 @@ import model.mUsuario;
 import controllers.Logeo;
 import controllers.Usuario;
 import com.sun.glass.events.KeyEvent;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -24,9 +29,13 @@ public class frmLogeo extends javax.swing.JFrame {
      */
     public frmLogeo() {
         initComponents();
-        this.setLocationRelativeTo(null);  
-       
-        
+         this.setLocationRelativeTo(null); 
+        Date date = new Date();
+        LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        int month = localDate.getMonthValue();
+        int an = localDate.getYear();
+        System.out.println(month);
+        System.out.println(an);
     }
 
     /**
@@ -139,7 +148,7 @@ public class frmLogeo extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 22, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -174,34 +183,34 @@ public class frmLogeo extends javax.swing.JFrame {
     private void txtclaveKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtclaveKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-        if (txtlogin.getText().length() == 0) {
-            JOptionPane.showMessageDialog(null, "Debe ingresar nombre de inicio sesion");
-            txtlogin.requestFocus();
-            return;
-        }
-        if (txtclave.getText().length() == 0) {
-
-            JOptionPane.showMessageDialog(null, "Debe ingresar clave de inicio sesion");
-            txtclave.requestFocus();
-            return;
-
-        }
-        mUsuario sSql = new mUsuario();
-        Logeo usu = new Logeo();
-        sSql.setUsuario(txtlogin.getText().trim());
-        sSql.setPassword(txtclave.getText().trim());
-        if (usu.verifica(sSql) == true) {
-            String tipo = "";
-            tipo = sSql.getTipo();
-            if (tipo.equals("Administracion")) {
-                frmPrincipal frmprin = new frmPrincipal();
-                frmprin.setVisible(true);
-                this.dispose();
+            if (txtlogin.getText().length() == 0) {
+                JOptionPane.showMessageDialog(null, "Debe ingresar nombre de inicio sesion");
+                txtlogin.requestFocus();
+                return;
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "USUARIO Y CLAVE INCORRECTO");
+            if (txtclave.getText().length() == 0) {
 
-        }
+                JOptionPane.showMessageDialog(null, "Debe ingresar clave de inicio sesion");
+                txtclave.requestFocus();
+                return;
+
+            }
+            mUsuario sSql = new mUsuario();
+            Logeo usu = new Logeo();
+            sSql.setUsuario(txtlogin.getText().trim());
+            sSql.setPassword(txtclave.getText().trim());
+            if (usu.verifica(sSql) == true) {
+                String tipo = "";
+                tipo = sSql.getTipo();
+                if (tipo.equals("Administracion")) {
+                    frmPrincipal frmprin = new frmPrincipal();
+                    frmprin.setVisible(true);
+                    this.dispose();
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "USUARIO Y CLAVE INCORRECTO");
+
+            }
         }
     }//GEN-LAST:event_txtclaveKeyPressed
 

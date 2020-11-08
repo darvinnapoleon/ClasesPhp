@@ -18,11 +18,10 @@ public class mDetVal {
     private String responsable;
     private int mesvale;
     private String anovale;
-    private int firma;
     public mDetVal() {
     }
 
-    public mDetVal(int iddetval, int idcli, String coddetval, String fecdetval, String estdetval, String responsable, int mesvale, String anovale, int firma) {
+    public mDetVal(int iddetval, int idcli, String coddetval, String fecdetval, String estdetval, String responsable, int mesvale, String anovale) {
         this.iddetval = iddetval;
         this.idcli = idcli;
         this.coddetval = coddetval;
@@ -31,7 +30,6 @@ public class mDetVal {
         this.responsable = responsable;
         this.mesvale = mesvale;
         this.anovale = anovale;
-        this.firma = firma;
     }
 
     public int getIddetval() {
@@ -97,13 +95,5 @@ public class mDetVal {
     public void setAnovale(String anovale) {
         this.anovale = anovale;
     }
-
-    public int getFirma() {
-        return firma;
-    }
-
-    public void setFirma(int firma) {
-        this.firma = firma;
-    }
-
+    
 }

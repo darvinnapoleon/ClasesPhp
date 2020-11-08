@@ -15,16 +15,16 @@ public class mValacu {
      String fecvale;
      String dnicli;
      String cod;
-     int fir;
+     String estdetval;
 
-    public int getFir() {
-        return fir;
+    public String getEstdetval() {
+        return estdetval;
     }
 
     
 
-    public void setFir(int fir) {
-        this.fir = fir;
+    public void setEstdetval(String estdetval) {
+        this.estdetval = estdetval;
     }
 
     
