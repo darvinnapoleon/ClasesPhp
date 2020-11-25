@@ -5,95 +5,46 @@
  */
 package view;
 
+import validaciones.Let_Num;
 import model.*;
 import controllers.*;
-import com.mysql.jdbc.Connection;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import validaciones.visualtabla;
 
 /**
  *
  * @author DARVIN
  */
 public class frmManBid extends javax.swing.JInternalFrame {
-     int rown = -1;
-    public JButton btn_enc = new JButton("Encargar");
+
+    int rown = -1;
+    Let_Num vallenu = new Let_Num();
+    visualtabla v1 = new visualtabla();
 
     /**
      * Creates new form frmLisCli
      */
     public frmManBid() {
         initComponents();
-      liscli(tblisbol, "");
-      
+        v1.lis_no_can(tblisbol, "");
+
         mostrar1("");
-         popmenven1();
-        combosde();
+        popmenven1();
         txtidven.setVisible(false);
         idcli.setVisible(false);
         canbid.setEnabled(false);
     }
-    private boolean[] editable = {false, false, false, false};
-    Bidon dao;
 
-    public void liscli(JTable tabla, String valor) {
-
-        tabla.setDefaultRenderer(Object.class, new Render());
-        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Apellidos", "Nombres", "Selecciona"}, 0) {
-
-            Class[] types = new Class[]{
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types[columnIndex];
-            }
-
-            public boolean isCellEditable(int row, int column) {
-                return editable[column];
-            }
-        };
-        btn_enc.setName("q");
-
-        dao = new Bidon();
-        mCliente vo = new mCliente();
-        ArrayList<mCliente> list = dao.Lis_Cli(valor);
-        if (list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                Object fila[] = new Object[4];
-                vo = list.get(i);
-                fila[0] = vo.getIdcli();
-                fila[1] = vo.getApecli();
-                fila[2] = vo.getNomcli();
-                fila[3] = btn_enc;
-                dt.addRow(fila);
-            }
-        }
-        tabla.setModel(dt);
-        tabla.setRowHeight(20);
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(8);
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(60);
-    }
-    
-void mostrar1(String valor) {
+    void mostrar1(String valor) {
         try {
             DefaultTableModel modelo;
             Bidon cat = new Bidon();
@@ -103,19 +54,8 @@ void mostrar1(String valor) {
             JOptionPane.showConfirmDialog(null, e);
         }
     }
-    void combosde() {
-        try {
-            Date fec = new Date();
-            int mes = fec.getMonth() + 1;
-            int an = fec.getYear() + 1900;
-            String an1 = Integer.toString(an);
 
-        } catch (Exception e) {
-            JOptionPane.showConfirmDialog(null, e);
-        }
-    }
-
-       void popmenven1() {
+    void popmenven1() {
         JPopupMenu popupmenu = new JPopupMenu();
         JMenuItem menuItem1 = new JMenuItem("Recepcionar");
         menuItem1.addActionListener(new ActionListener() {
@@ -125,24 +65,23 @@ void mostrar1(String valor) {
                 if (col == -1) {
                     JOptionPane.showMessageDialog(null, "selecciona una dato");
                 } else {
-                    
-            mBidon sSql = new mBidon();
-            Bidon ven = new Bidon();
-                    LocalDate localDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
-        String fec = localDate.format(formatter);
-            sSql.setIdcli(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 0).toString()));
-            sSql.setFecalmbid(fec);
-            sSql.setCanbid(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 4).toString()));
-            if (ven.rec_bid(sSql)) {
-                mostrar1("");
-                txtidven.setText("");
-               
-            }
-        }
-                }
 
-            
+                    mBidon sSql = new mBidon();
+                    Bidon ven = new Bidon();
+                    LocalDate localDate = LocalDate.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+                    String fec = localDate.format(formatter);
+                    sSql.setIdcli(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 0).toString()));
+                    sSql.setFecalmbid(fec);
+                    sSql.setCanbid(Integer.parseInt(tblisbol1.getModel().getValueAt(col, 4).toString()));
+                    if (ven.rec_bid(sSql)) {
+                        mostrar1("");
+                        txtidven.setText("");
+
+                    }
+                }
+            }
+
         });
 
         popupmenu.add(menuItem1);
@@ -333,66 +272,61 @@ void mostrar1(String valor) {
 
     private void txtbuscaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscaKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if (!(c < '0' || c > '9')) {
-            evt.consume();
-        }
+        vallenu.sololet(evt);
     }//GEN-LAST:event_txtbuscaKeyTyped
 
     private void txtbuscaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscaKeyPressed
         // TODO add your handling code here:
-         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-       liscli(tblisbol, txtbusca.getText());
-       mostrar1(txtbusca.getText());
-         txtbusca.requestFocus();
-        txtbusca.setSelectionStart(0);
-        txtbusca.setSelectionEnd(txtbusca.getText().length());}
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            v1.lis_no_can(tblisbol, txtbusca.getText());
+            mostrar1(txtbusca.getText());
+            txtbusca.requestFocus();
+            txtbusca.setSelectionStart(0);
+            txtbusca.setSelectionEnd(txtbusca.getText().length());
+        }
     }//GEN-LAST:event_txtbuscaKeyPressed
 
     private void canbidKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_canbidKeyPressed
         // TODO add your handling code here:
-         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             if (canbid.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "ingresar cantidad");
                 this.canbid.requestFocus();
                 return;
-            }else{
+            } else {
                 mBidon sSql = new mBidon();
-            Bidon ven = new Bidon();
-                    LocalDate localDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
-        String fec = localDate.format(formatter);
-            sSql.setIdcli(Integer.parseInt(idcli.getText()));
-            sSql.setFecencbid(fec);
-            sSql.setCanbid(Integer.parseInt(canbid.getText()));
-           canbid.setEnabled(false);
-            ven.enc_bid(sSql);
+                Bidon ven = new Bidon();
+                LocalDate localDate = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+                String fec = localDate.format(formatter);
+                sSql.setIdcli(Integer.parseInt(idcli.getText()));
+                sSql.setFecencbid(fec);
+                sSql.setCanbid(Integer.parseInt(canbid.getText()));
+                canbid.setEnabled(false);
+                ven.enc_bid(sSql);
                 mostrar1("");
                 canbid.setText("");
-              
-            
+
             }
-         }
-          
-        
+        }
+
+
     }//GEN-LAST:event_canbidKeyPressed
 
     private void canbidKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_canbidKeyTyped
         // TODO add your handling code here:
-         char c = evt.getKeyChar();
-        if ((c < '0' || c > '9')) {
-            evt.consume();
-        }
+
+        vallenu.solonum(evt);
     }//GEN-LAST:event_canbidKeyTyped
 
     private void tblisbolKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblisbolKeyPressed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_tblisbolKeyPressed
 
     private void tblisbolMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblisbolMouseClicked
         // TODO add your handling code here:
-         rown = tblisbol.rowAtPoint(evt.getPoint());
+        rown = tblisbol.rowAtPoint(evt.getPoint());
         int column = tblisbol.getColumnModel().getColumnIndexAtX(evt.getX());
         int row = evt.getY() / tblisbol.getRowHeight();
         int po = evt.getY();
@@ -402,13 +336,13 @@ void mostrar1(String valor) {
                 ((JButton) value).doClick();
                 JButton boton = (JButton) value;
                 String va1 = "" + tblisbol.getValueAt(rown, 0);
-                
+
                 if (boton.getName().equals("q")) {
                     try {
                         canbid.setEnabled(true);
                         idcli.setText(va1);
                         canbid.requestFocus();
-                        
+
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
                     }

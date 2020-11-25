@@ -5,10 +5,9 @@
  */
 package view;
 
-import controllers.*;
-import static view.frmPrincipal.panfer;
-
 import com.mysql.jdbc.Connection;
+import controllers.Conexion;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -26,17 +25,17 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public class frmReportes extends javax.swing.JInternalFrame {
 
+    Conexion con = new Conexion();
+    Connection conn = con.oConexion();
+
     /**
      * Creates new form frmLisCli
      */
     public frmReportes() {
         initComponents();
-        cbomes.setEnabled(false);
-        cboano.setEnabled(false);
-        // combos();
 
     }
-   
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -48,12 +47,13 @@ public class frmReportes extends javax.swing.JInternalFrame {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
-        txtbusbol = new javax.swing.JButton();
         rbcli = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         cboben = new javax.swing.JRadioButton();
-        cboano = new javax.swing.JComboBox<>();
-        cbomes = new javax.swing.JComboBox<>();
+        tfano = new javax.swing.JTextField();
+        tfmes = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -63,25 +63,11 @@ public class frmReportes extends javax.swing.JInternalFrame {
 
         jPanel1.setBackground(java.awt.Color.lightGray);
 
-        txtbusbol.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        txtbusbol.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/search.png"))); // NOI18N
-        txtbusbol.setText("Buscar");
-        txtbusbol.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtbusbolActionPerformed(evt);
-            }
-        });
-
         rbcli.setBackground(new java.awt.Color(204, 204, 204));
         buttonGroup1.add(rbcli);
         rbcli.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         rbcli.setSelected(true);
         rbcli.setText("Todos los clientes");
-        rbcli.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbcliActionPerformed(evt);
-            }
-        });
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 51, 0));
@@ -91,16 +77,22 @@ public class frmReportes extends javax.swing.JInternalFrame {
         buttonGroup1.add(cboben);
         cboben.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         cboben.setText("Clientes beneficiarios");
-        cboben.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbobenActionPerformed(evt);
+
+        tfano.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfanoKeyPressed(evt);
             }
         });
 
-        cboano.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "anio", "2018", "2019", "2020", "2021", "2022", "2023", "2024" }));
+        tfmes.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfmesKeyPressed(evt);
+            }
+        });
 
-        cbomes.setMaximumRowCount(13);
-        cbomes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mes", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
+        jLabel2.setText("mes");
+
+        jLabel3.setText("año");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -110,19 +102,25 @@ public class frmReportes extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(cboben)
-                        .addGap(18, 18, 18)
-                        .addComponent(cbomes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tfmes, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(19, 19, 19)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tfano, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(30, 30, 30)
+                                .addComponent(jLabel3))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(84, 84, 84)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(rbcli)
-                        .addGap(28, 28, 28)
-                        .addComponent(txtbusbol, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(88, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addComponent(cboben)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -131,13 +129,16 @@ public class frmReportes extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rbcli)
-                    .addComponent(txtbusbol))
-                .addGap(18, 18, 18)
+                    .addComponent(cboben))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cboben)
-                    .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbomes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(40, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfmes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -154,87 +155,64 @@ public class frmReportes extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void rbcliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbcliActionPerformed
-        if (rbcli.isSelected() == true) {
-            cbomes.setEnabled(false);
-            cboano.setEnabled(false);
-
-        }
-    }//GEN-LAST:event_rbcliActionPerformed
-
-    private void txtbusbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbusbolActionPerformed
-
-        Conexion con = new Conexion();
-        Connection conn = con.oConexion();
-        JasperReport reporte = null;
-        if (cboben.isSelected() == true) {
-            
-            rbcli.setEnabled(true);
-            try {
-                int mes=cbomes.getSelectedIndex();
-                String ano=cboano.getSelectedItem().toString();
-                String path = "repBen.jasper";
-                Map parametro = new HashMap();
-                parametro.put("mesv", mes);
-                parametro.put("anov", ano);
-                reporte = (JasperReport) JRLoader.loadObjectFromFile(path);
-                JasperPrint jprint = JasperFillManager.fillReport(reporte, parametro, conn);
-                JasperViewer view = new JasperViewer(jprint, false);
-                view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                view.setVisible(true);
-            } catch (JRException ex) {
-                Logger.getLogger(frmReportes.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        if (rbcli.isSelected() == true) {
-            
-            try {
-
-                String path = "repClientes.jasper";
-                reporte = (JasperReport) JRLoader.loadObjectFromFile(path);
-                JasperPrint jprint = JasperFillManager.fillReport(reporte, null, conn);
-                JasperViewer view = new JasperViewer(jprint, false);
-                view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                view.setVisible(true);
-            } catch (JRException ex) {
-                Logger.getLogger(frmReportes.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-         /*if (rbvalnent.isSelected() == true) {
-            rbcli.setEnabled(true);
-            try {
-                Date fec = new Date();
-                String path = "repValNEnt.jasper";
-                reporte = (JasperReport) JRLoader.loadObjectFromFile(path);
-                JasperPrint jprint = JasperFillManager.fillReport(reporte, null, conn);
-                JasperViewer view = new JasperViewer(jprint, false);
-                view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                view.setVisible(true);
-            } catch (JRException ex) {
-                Logger.getLogger(frmReportes.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }*/
-
-    }//GEN-LAST:event_txtbusbolActionPerformed
-
-    private void cbobenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbobenActionPerformed
+    private void tfmesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfmesKeyPressed
         // TODO add your handling code here:
-        if (cboben.isSelected() == true) {
-            cbomes.setEnabled(true);
-            cboano.setEnabled(true);
+         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+             tfano.requestFocus();
+             
+         }
+    }//GEN-LAST:event_tfmesKeyPressed
 
+    private void tfanoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfanoKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+
+            JasperReport reporte = null;
+            if (cboben.isSelected() == true) {
+
+                rbcli.setEnabled(true);
+                try {
+                    int mes = Integer.parseInt(tfmes.getText());
+                    String ano = tfano.getText();
+                    String path = "repBen.jasper";
+                    Map parametro = new HashMap();
+                    parametro.put("mesv", mes);
+                    parametro.put("anov", ano);
+                    reporte = (JasperReport) JRLoader.loadObjectFromFile(path);
+                    JasperPrint jprint = JasperFillManager.fillReport(reporte, parametro, conn);
+                    JasperViewer view = new JasperViewer(jprint, false);
+                    view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                    view.setVisible(true);
+                } catch (JRException ex) {
+                    Logger.getLogger(frmReportes.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            if (rbcli.isSelected() == true) {
+
+                try {
+
+                    String path = "repClientes.jasper";
+                    reporte = (JasperReport) JRLoader.loadObjectFromFile(path);
+                    JasperPrint jprint = JasperFillManager.fillReport(reporte, null, conn);
+                    JasperViewer view = new JasperViewer(jprint, false);
+                    view.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                    view.setVisible(true);
+                } catch (JRException ex) {
+                    Logger.getLogger(frmReportes.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
-    }//GEN-LAST:event_cbobenActionPerformed
+    }//GEN-LAST:event_tfanoKeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox<String> cboano;
     private javax.swing.JRadioButton cboben;
-    private javax.swing.JComboBox<String> cbomes;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JRadioButton rbcli;
-    private javax.swing.JButton txtbusbol;
+    private javax.swing.JTextField tfano;
+    private javax.swing.JTextField tfmes;
     // End of variables declaration//GEN-END:variables
 }

@@ -27,20 +27,20 @@ public class Vales {
     private Conexion oconex = new Conexion();
     private Connection con = oconex.oConexion();
     private String sql = "";
-    
+
     public DefaultTableModel no_can(mDetVal md) {
         DefaultTableModel modelo;
         String[] titulos = {"Id", "Apellidos y Nombres"};
         String[] registro = new String[2];
         modelo = new DefaultTableModel(null, titulos);
         sql = "SELECT  dv.iddetval, c.apecli,c.nomcli FROM cliente AS c "
-                + "INNER JOIN detvale AS dv ON c.idcli = dv.idcli WHERE dv.mesvale ="+md.getMesvale()+" && dv.anovale = "+md.getAnovale()+" && dv.estdetval = 0 ORDER BY dv.iddetval ASC";
+                + "INNER JOIN detvale AS dv ON c.idcli = dv.idcli WHERE dv.mesvale =" + md.getMesvale() + " && dv.anovale = " + md.getAnovale() + " && dv.estdetval = 0 ORDER BY dv.iddetval ASC";
         try {
             Statement st = (Statement) con.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
                 registro[0] = rs.getString("iddetval");
-                registro[1] = rs.getString("apecli")+" "+rs.getString("nomcli");
+                registro[1] = rs.getString("apecli") + " " + rs.getString("nomcli");
                 modelo.addRow(registro);
             }
             return modelo;
@@ -49,6 +49,7 @@ public class Vales {
             return null;
         }
     }
+
     public boolean ins_detval(mDetVal sSql) {
         sql = "INSERT INTO detvale(idcli,coddetval,estdetval,mesvale,anovale, fecdetval, responsable) VALUES(?,?,?,?,?,?,?)";
         try {
@@ -74,39 +75,71 @@ public class Vales {
         }
     }
 
-   
-    public ArrayList<mValacu> Lis_Valfir(String valor1){
-        ArrayList<mValacu> list = new ArrayList<mValacu>();
+    public ArrayList<mValacu> Lis_Valfir(String valor1) {
+        ArrayList<mValacu> lis_val = new ArrayList<mValacu>();
         sql = "SELECT  dv.iddetval, dv.coddetval, dv.mesvale, dv.anovale FROM cliente AS c "
                 + "INNER JOIN detvale AS dv ON c.idcli = dv.idcli WHERE c.dnicli ='" + valor1 + "' and dv.estdetval = 1  ORDER BY dv.iddetval DESC";
         ResultSet rs = null;
         PreparedStatement ps = null;
-      
-        try{
-             ps = (PreparedStatement) con.prepareStatement(sql);
-          
+        try {
+            ps = (PreparedStatement) con.prepareStatement(sql);
             rs = ps.executeQuery();
-            while(rs.next()){
-                mValacu vo = new mValacu();
-                vo.setIddetval(rs.getInt(1));
-                vo.setCod(rs.getString(2));
-                vo.setFecvale(rs.getString(3)+"/"+rs.getString(4));
-                list.add(vo);
+            
+            while (rs.next()) {
+                mValacu mval = new mValacu();
+                mval.setIddetval(rs.getInt(1));
+                mval.setCod(rs.getString(2));
+                mval.setFecvale(rs.getString(3) + "/" + rs.getString(4));
+                lis_val.add(mval);
             }
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-        }catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
-        }finally{
-            try{
+        } finally {
+            try {
                 ps.close();
                 rs.close();
-    
-            }catch(Exception ex){}
+
+            } catch (Exception ex) {
+            }
         }
-        return list;
+        return lis_val;
     }
-     public boolean act_valfir(mDetVal sSql) {
+    
+    public ArrayList<mValacu> Lis_valnofir(String valor1) {
+        ArrayList<mValacu> lis_val = new ArrayList<mValacu>();
+        sql = "SELECT dv.iddetval, c.apecli, c.nomcli, c.dnicli, dv.coddetval, dv.estdetval FROM cliente AS c INNER JOIN detvale AS dv ON c.idcli=dv.idcli WHERE dv.estdetval=0 and c.dnicli='" + valor1 + "'";
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        try {
+            ps = (PreparedStatement) con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                mValacu mval = new mValacu();
+                mval.setIddetval(rs.getInt(1));
+                mval.setApenom(rs.getString(2) + " " + rs.getString(3));
+                mval.setDnicli(rs.getString(4));
+                mval.setCod(rs.getString(5));
+                mval.setEstdetval(rs.getString(6));
+                lis_val.add(mval);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            try {
+                ps.close();
+                rs.close();
+
+            } catch (Exception ex) {
+            }
+        }
+        return lis_val;
+    }
+
+    public boolean act_valfir(mDetVal sSql) {
         //variable sql
         sql = "Update detvale SET fecdetval = ?, estdetval = ?, responsable = ? WHERE iddetval = ?";
         try {
@@ -127,7 +160,8 @@ public class Vales {
             return false;
         }
     }
-     public String ver_vale(mDetVal sSql) {
+
+    public String ver_vale(mDetVal sSql) {
         sql = "SELECT idcli FROM detvale where mesvale=? and anovale=? and idcli=?";
         String codcli = "";
         try {
@@ -144,7 +178,8 @@ public class Vales {
         }
         return codcli;
     }
-     public boolean act_valnofir(mDetVal sSql) {
+
+    public boolean act_valnofir(mDetVal sSql) {
         //variable sql
         sql = "Update detvale SET estdetval= ? WHERE iddetval = ?";
         try {
@@ -164,7 +199,7 @@ public class Vales {
         }
     }
 
-     public boolean act_valnocan(mDetVal sSql) {
+    public boolean act_valnocan(mDetVal sSql) {
         //variable sql
         sql = "Update detvale SET responsable = ?, fecdetval = ?, estdetval = ?WHERE iddetval = ?";
         try {
@@ -185,9 +220,10 @@ public class Vales {
             return false;
         }
     }
-     public int can_valcan() {
+
+    public int can_valcan() {
         sql = "SELECT COUNT(iddetval) FROM detvale where estdetval=1";
-        int codcli=0;
+        int codcli = 0;
         try {
             PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
@@ -199,7 +235,8 @@ public class Vales {
         }
         return codcli;
     }
-      public String rec_apenom(String txtdni) {
+
+    public String rec_apenom(String txtdni) {
         String ape = "";
         String nom = "";
         sql = "SELECT * FROM cliente where dnicli= '" + txtdni + "'";
@@ -215,7 +252,8 @@ public class Vales {
         }
         return ape + " " + nom;
     }
-       public String rec_codcli(String txtdni) {
+
+    public String rec_codcli(String txtdni) {
         String ape = "";
 
         sql = "SELECT * FROM cliente where dnicli= '" + txtdni + "'";
@@ -231,7 +269,8 @@ public class Vales {
         }
         return ape;
     }
-       public DefaultTableModel val_ent(String valor) {
+
+    public DefaultTableModel val_ent(String valor) {
         DefaultTableModel modelo;
         String[] titulos = {"Codigo", "Fecha Vale", "Fecha Entrega", "Responsable"};
         String[] registro = new String[5];
@@ -255,7 +294,8 @@ public class Vales {
             return null;
         }
     }
-       public DefaultTableModel val_nofir(String valor) {
+
+    public DefaultTableModel val_nofir(String valor) {
         DefaultTableModel modelo;
         String[] titulos = {"Apellidos y Nombres", "DNI", "Codigo",};
         String[] registro = new String[3];
@@ -281,27 +321,21 @@ public class Vales {
             return null;
         }
     }
-        public ArrayList<mValacu> Lis_valnofir(String valor1) {
-        ArrayList<mValacu> list = new ArrayList<mValacu>();
-       Date fec0 = new Date();
-        Integer fec = fec0.getMonth() - 1;
-        Integer ano = fec0.getYear() + 1900;
-        sql = "SELECT dv.iddetval, c.apecli, c.nomcli, c.dnicli, dv.coddetval, dv.estdetval FROM cliente AS c INNER JOIN detvale AS dv ON c.idcli=dv.idcli WHERE dv.estdetval=0 and c.dnicli='" + valor1 + "'";
+
+    public ArrayList<mProducto> Dat_Pro(String valor1) {
+        ArrayList<mProducto> lispro = new ArrayList<mProducto>();
+        sql = "SELECT  pre1,pre2, pre3 FROM producto WHERE nompro ='" + valor1 + "'";
         ResultSet rs = null;
         PreparedStatement ps = null;
-
         try {
             ps = (PreparedStatement) con.prepareStatement(sql);
-
             rs = ps.executeQuery();
+            mProducto mpro = new mProducto();
             while (rs.next()) {
-                mValacu vo = new mValacu();
-                vo.setIddetval(rs.getInt(1));
-                vo.setApenom(rs.getString(2) + " " + rs.getString(3));
-                vo.setDnicli(rs.getString(4));
-                vo.setCod(rs.getString(5));
-                vo.setEstdetval(rs.getString(6));
-                list.add(vo);
+                mpro.setPre1(rs.getDouble(1));
+                mpro.setPre2(rs.getDouble(2));
+                mpro.setPre3(rs.getDouble(3));
+                lispro.add(mpro);
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
@@ -315,6 +349,34 @@ public class Vales {
             } catch (Exception ex) {
             }
         }
-        return list;
+        return lispro;
+    }
+    
+    public ArrayList<mProducto> nom_pro() {
+        ArrayList<mProducto> lispro = new ArrayList<mProducto>();
+        sql = "SELECT  nompro FROM producto";
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        try {
+            ps = (PreparedStatement) con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            mProducto mpro = new mProducto();
+            while (rs.next()) {
+                mpro.setNompro(rs.getString(1));
+                lispro.add(mpro);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            try {
+                ps.close();
+                rs.close();
+
+            } catch (Exception ex) {
+            }
+        }
+        return lispro;
     }
 }

@@ -142,9 +142,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="txtlogin">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtloginActionPerformed"/>
             <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtloginKeyPressed"/>
-            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="txtloginKeyTyped"/>
           </Events>
         </Component>
         <Component class="javax.swing.JPasswordField" name="txtclave">

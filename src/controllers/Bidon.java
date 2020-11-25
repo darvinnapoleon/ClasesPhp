@@ -32,7 +32,7 @@ public class Bidon {
         int cod = sSql.getIdcli();
         String cap = "";
         int desfinal;
-        String consul = "SELECT estbid FROM bidon WHERE  idcli='" + cod + "'";
+        String consul = "SELECT canbid FROM bidon WHERE  idcli='" + cod + "'";
         try {
 
             Statement st = (Statement) con.createStatement();
@@ -44,7 +44,7 @@ public class Bidon {
         }
 
         desfinal = Integer.parseInt(cap) + sSql.getCanbid();
-        String modi = "UPDATE bidon SET fecencbid=?, estbid=? WHERE idcli ='" + cod + "'";
+        String modi = "UPDATE bidon SET fecencbid=?, canbid=? WHERE idcli ='" + cod + "'";
         try {
             PreparedStatement pst = (PreparedStatement) con.prepareStatement(modi);
             pst.setString(1, sSql.getFecencbid());
@@ -59,7 +59,7 @@ public class Bidon {
         int cod = sSql.getIdcli();
         int desfinal;
         desfinal = sSql.getCanbid() - 1;
-        sql = "UPDATE bidon SET fecalmbid=?, estbid=? WHERE idcli ='" + cod + "'";
+        sql = "UPDATE bidon SET fecalmbid=?, canbid=? WHERE idcli ='" + cod + "'";
         try {
             PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
             pst.setString(1, sSql.getFecalmbid());
@@ -144,7 +144,7 @@ public class Bidon {
         String[] registro = new String[5];
         modelo = new DefaultTableModel(null, titulos);
 
-        sql = "SELECT c.idcli,c.apecli, c.nomcli,c.dnicli,b.estbid FROM cliente AS c INNER JOIN bidon AS b ON c.idcli=b.idcli WHERE apecli LIKE '%" + valor + "%' AND b.estbid > 0";
+        sql = "SELECT c.idcli,c.apecli, c.nomcli,c.dnicli,b.canbid FROM cliente AS c INNER JOIN bidon AS b ON c.idcli=b.idcli WHERE apecli LIKE '%" + valor + "%' AND b.canbid > 0";
         Statement st;
         try {
             st = (Statement) con.createStatement();
@@ -154,7 +154,7 @@ public class Bidon {
                 registro[1] = rs.getString("apecli");
                 registro[2] = rs.getString("nomcli");
                 registro[3] = rs.getString("dnicli");
-                registro[4] = rs.getString("estbid");
+                registro[4] = rs.getString("canbid");
                 modelo.addRow(registro);
             }
         } catch (SQLException ex) {

@@ -5,27 +5,21 @@
  */
 package view;
 
+import validaciones.Let_Num;
 import model.*;
 import controllers.*;
 import java.awt.Color;
-
+import java.awt.HeadlessException;
 import java.awt.event.KeyEvent;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-
 import javax.swing.JOptionPane;
-
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import validaciones.visualtabla;
 
 /**
  *
@@ -35,42 +29,38 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
     private final JComponent component = new JCheckBox();
     int rown = -1;
-    public JButton btn_quitar = new JButton("Enviar");
-    public JButton btn_quitar1 = new JButton("Firmar");
-
+    Let_Num vallenu = new Let_Num();
+    visualtabla vis_tab = new visualtabla();
+    Vales val = new Vales();
     /**
      * Creates new form frmLisCli
      */
     //Tabla t = new Tabla();
     public frmLisVal() {
         initComponents();
-
         txtidven.setVisible(false);
         tabmes.setVisible(false);
         lbcodcli.setVisible(false);
+        lbpre1.setVisible(false);
+        lbpre2.setVisible(false);
+        lbpre3.setVisible(false);
         txtcli.setEnabled(false);
         txtcodval.setEnabled(false);
-        CanValAcu();
+        tfres.setEnabled(false);
+        tfcan.setEnabled(false);
+        cant_val_acu();
 
         // visualizar(tblisbol, "");
     }
-
-    public void limpiarTabla() {
-        try {
-            DefaultTableModel modelo = (DefaultTableModel) tbvalagr.getModel();
-            int filas = tbvalagr.getRowCount();
-            for (int i = 0; i <= filas; i++) {
-                modelo.removeRow(0);
-            }
-        } catch (Exception e) {
-
-        }
+    void val_cam() {
+        txtvaldni.requestFocus();
+        txtvaldni.setSelectionStart(0);
+        txtvaldni.setSelectionEnd(txtvaldni.getText().length());
     }
 
-    void CanValAcu() {
+    private void cant_val_acu() {
         try {
             double tot;
-            Vales val = new Vales();
             tot = val.can_valcan() * 16;
             lbdin.setText("" + tot);
         } catch (Exception e) {
@@ -81,8 +71,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
     void mostrar(String valor) {
         try {
             DefaultTableModel modelo;
-            Vales clilis = new Vales();
-            modelo = clilis.val_nofir(valor);
+            modelo = val.val_nofir(valor);
             this.tabmes.setModel(modelo);
 
         } catch (Exception e) {
@@ -90,107 +79,28 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         }
     }
 
-    void mostrar1(String valor) {
+    void tab_val_ent(String valor) {
         try {
             DefaultTableModel modelo;
-            Vales clilis = new Vales();
-            modelo = clilis.val_ent(valor);
+            modelo = val.val_ent(valor);
             this.tbliscli.setModel(modelo);
 
         } catch (Exception e) {
             JOptionPane.showConfirmDialog(null, e);
         }
     }
-
-    private boolean[] editable = {false, false, false, false};
-    Vales dao;
-
-    public void visualizar(JTable tabla, String valor) {
-
-        tabla.setDefaultRenderer(Object.class, new Render());
-        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Codigo", "Fecha Vale", "Seleccionar"}, 0) {
-
-            Class[] types = new Class[]{
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types[columnIndex];
-            }
-
-            public boolean isCellEditable(int row, int column) {
-                return editable[column];
-            }
-        };
-        btn_quitar.setName("q");
-
-        dao = new Vales();
-        mValacu vo = new mValacu();
-        ArrayList<mValacu> list = dao.Lis_Valfir(valor);
+    private void dat_pro() {
+        mProducto mpro = new mProducto();
+        ArrayList<mProducto> list = val.Dat_Pro("1");
         if (list.size() > 0) {
             for (int i = 0; i < list.size(); i++) {
-                Object fila[] = new Object[4];
-                vo = list.get(i);
-                fila[0] = vo.getIddetval();
-                fila[1] = vo.getCod();
-                fila[2] = vo.getFecvale();
-                fila[3] = btn_quitar;
-                dt.addRow(fila);
+                mpro = list.get(i);
+                lbpre1.setText(""+mpro.getPre1());
+                lbpre2.setText("" + mpro.getPre2());
+                lbpre3.setText("" + mpro.getPre3());
             }
         }
-        tabla.setModel(dt);
-        tabla.setRowHeight(25);
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(20);
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(150);
     }
-    Vales dao1;
-    private boolean[] editable1 = {false, false, false, false, false};
-
-    public void visualizar1(JTable tabla, String valor) {
-
-        tabla.setDefaultRenderer(Object.class, new Render());
-        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Apellidos y Nombres", "DNI", "Codigo", "Seleccionar"}, 0) {
-
-            Class[] types = new Class[]{
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types[columnIndex];
-            }
-
-            public boolean isCellEditable(int row, int column) {
-                return editable1[column];
-            }
-        };
-        btn_quitar1.setName("q1");
-
-        dao1 = new Vales();
-        mValacu vo = new mValacu();
-        ArrayList<mValacu> list = dao1.Lis_valnofir(valor);
-        if (list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                Object fila[] = new Object[5];
-                vo = list.get(i);
-                fila[0] = vo.getIddetval();
-                fila[1] = vo.getApenom();
-                fila[2] = vo.getDnicli();
-                fila[3] = vo.getCod();
-                if (vo.getEstdetval().equals("0")) {
-                    fila[4] = btn_quitar1;
-                }
-
-                dt.addRow(fila);
-            }
-        }
-        tabla.setModel(dt);
-        tabla.setRowHeight(20);
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(200);
-        txtvaldni.requestFocus();
-        txtvaldni.setSelectionStart(0);
-        txtvaldni.setSelectionEnd(txtvaldni.getText().length());
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -209,7 +119,6 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         jLabel6 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tbvalagr = new javax.swing.JTable();
-        btneli = new javax.swing.JButton();
         btnven = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tabmes = new javax.swing.JTable();
@@ -227,11 +136,21 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         btnregpro3 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         lbdin = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        tfres = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        tfcan = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jlgas = new javax.swing.JList<>();
+        lbpre3 = new javax.swing.JLabel();
+        lbpre2 = new javax.swing.JLabel();
+        lbpre1 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("VALES ACUMULATIVOS");
+        setTitle("MANTENIMIENTO DE VALES");
 
         jPanel1.setBackground(java.awt.Color.lightGray);
 
@@ -261,11 +180,6 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
         txtidven.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 102, 102)));
 
-        txtvaldni.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtvaldniActionPerformed(evt);
-            }
-        });
         txtvaldni.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtvaldniKeyPressed(evt);
@@ -286,11 +200,11 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Codigo", "Fecha de Vale"
+                "Codigo", "Fecha", "Accion"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -303,15 +217,6 @@ public class frmLisVal extends javax.swing.JInternalFrame {
             }
         });
         jScrollPane2.setViewportView(tbvalagr);
-
-        btneli.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        btneli.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/Delete.png"))); // NOI18N
-        btneli.setText("ELIMINAR");
-        btneli.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btneliActionPerformed(evt);
-            }
-        });
 
         btnven.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         btnven.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/Save.png"))); // NOI18N
@@ -362,11 +267,6 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         jLabel3.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         jLabel3.setText("Codigo de Vale:");
 
-        txtcodval.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtcodvalActionPerformed(evt);
-            }
-        });
         txtcodval.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtcodvalKeyPressed(evt);
@@ -434,45 +334,100 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
         lbdin.setText("jLabel2");
 
+        jLabel2.setText("Responsable:");
+
+        tfres.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfresKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfresKeyTyped(evt);
+            }
+        });
+
+        jLabel5.setText("Cantidad:");
+
+        tfcan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfcanKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfcanKeyTyped(evt);
+            }
+        });
+
+        jLabel7.setText("Gas:");
+
+        jScrollPane5.setViewportView(jlgas);
+
+        lbpre3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        lbpre2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        lbpre1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtvaldni, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtidven, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnven)
+                                .addGap(39, 39, 39)
+                                .addComponent(lbpre1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbpre2, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbpre3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lbcodcli, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel6)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtvaldni, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(26, 26, 26)
-                                        .addComponent(txtidven, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(56, 56, 56)
-                                        .addComponent(btnven)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btneli))
                                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 706, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtcodval, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(98, 98, 98)
-                                        .addComponent(btnregpro2)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnregpro3)
-                                        .addGap(60, 60, 60)
-                                        .addComponent(lbcodcli, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                        .addGap(10, 10, 10)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(28, 28, 28)
+                                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jLabel2)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(tfres, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(28, 28, 28)
+                                                .addComponent(jLabel5)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(tfcan, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel7)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtcodval, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(40, 40, 40)
+                                .addComponent(btnregpro2)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnregpro1)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnregpro3))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addGap(18, 18, 18)
@@ -480,65 +435,80 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(txtcli, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnregpro1)))
-                        .addContainerGap())))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(57, 57, 57)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtcli, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbdin, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(57, 57, 57)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbdin, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 626, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(txtvaldni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(txtidven, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btneli, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addComponent(btnven, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(13, 13, 13)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(txtvaldni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtidven, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(btnven, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lbcodcli, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbpre3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbpre2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lbpre1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel4)
                         .addComponent(cbomes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnregpro1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtcli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(txtcli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(txtcodval, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(lbcodcli, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnregpro2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnregpro3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(26, 26, 26)
+                            .addComponent(txtcodval, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnregpro3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnregpro1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnregpro2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(9, 9, 9)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(tfres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfcan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7)))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbdin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(lbdin))
+                .addGap(36, 36, 36))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -549,9 +519,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(30, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 613, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -559,10 +527,8 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
     private void txtvaldniKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtvaldniKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if ((c < '0' || c > '9')) {
-            evt.consume();
-        }
+        vallenu.solonum(evt);
+        
     }//GEN-LAST:event_txtvaldniKeyTyped
 
     private void txtvaldniKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtvaldniKeyPressed
@@ -570,23 +536,22 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
 
             String valor1 = this.txtvaldni.getText().trim();
-            visualizar(tblisbol, valor1);
-            visualizar1(tabmes, valor1);
-            mostrar1(valor1);
+            vis_tab.val_no_fir(tabmes, valor1);
+            vis_tab.val_acu(tblisbol, valor1);
+            tab_val_ent(valor1);
+            val_cam();
             tabmes.setVisible(true);
             txtvaldni.requestFocus();
             txtvaldni.setSelectionStart(0);
             txtvaldni.setSelectionEnd(txtvaldni.getText().length());
-            Vales prolis = new Vales();
-            txtcli.setText(prolis.rec_apenom(valor1));
+            txtcli.setText(val.rec_apenom(valor1));
             txtcli.setDisabledTextColor(Color.blue);
-            lbcodcli.setText(prolis.rec_codcli(valor1));
+            lbcodcli.setText(val.rec_codcli(valor1));
 
             if (txtcli.getText().length() < 2) {
                 txtvaldni.requestFocus();
-                return;
             } else {
-                txtcodval.requestFocus();
+                txtcodval.requestFocus(true);
                 txtcodval.setEnabled(true);
             }
 
@@ -604,29 +569,20 @@ public class frmLisVal extends javax.swing.JInternalFrame {
             if (value instanceof JButton) {
                 ((JButton) value).doClick();
                 JButton boton = (JButton) value;
-                String va1 = "" + tblisbol.getValueAt(rown, 0);
-                String va2 = "" + tblisbol.getValueAt(rown, 2);
+                String cod = "" + tblisbol.getValueAt(rown, 0);
+                String fec = "" + tblisbol.getValueAt(rown, 2);
                 if (boton.getName().equals("q")) {
                     try {
-                        DefaultTableModel tabladet = (DefaultTableModel) frmLisVal.tbvalagr.getModel();
-                        String[] dato = new String[2];
-                        int c = 0;
-                        int j = 0;
-                        for (int i = 0; i < frmLisVal.tbvalagr.getRowCount(); i++) {
-                            Object com = frmLisVal.tbvalagr.getValueAt(i, 0);
-                            if (va1.equals(com)) {
-                                j = i;
-                                c = c + 1;
-                            }
+                        int conta = tbvalagr.getRowCount();
+                        if (conta > 2) {
+                            JOptionPane.showMessageDialog(rootPane, "Agrega 3 vales como maximo");
+                            return;
                         }
-                        if (c == 0) {
-                            dato[0] = va1;
-                            dato[1] = va2;
-                            tabladet.addRow(dato);
-                            frmLisVal.tbvalagr.setModel(tabladet);
-                        }
-                        CanValAcu();
-                    } catch (Exception ex) {
+                        vis_tab.val_agr(tbvalagr, cod, fec);
+                        tfres.setEnabled(true);
+                        tfcan.setEnabled(true);
+                        tfres.requestFocus();
+                    } catch (HeadlessException ex) {
                         System.out.println(ex.getMessage());
                     }
                 }
@@ -638,64 +594,94 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
     private void tbvalagrMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbvalagrMouseClicked
         // TODO add your handling code here:
+        vis_tab.qui_fila(tbvalagr, evt);
     }//GEN-LAST:event_tbvalagrMouseClicked
-
-    private void btneliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliActionPerformed
-        // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tbvalagr.getModel();
-        int fila = tbvalagr.getSelectedRow();
-        if (fila >= 0) {
-            model.removeRow(fila);
-        } else {
-            JOptionPane.showMessageDialog(null, "Tabla vacia o no seleccione ninguna fila");
-        }
-    }//GEN-LAST:event_btneliActionPerformed
 
     private void btnvenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnvenActionPerformed
         // TODO add your handling code here:
-        int conta = frmLisVal.tbvalagr.getRowCount();
-        if (conta == 0) {
+        int numfil = frmLisVal.tbvalagr.getRowCount();
+        if (numfil == 0) {
             JOptionPane.showMessageDialog(rootPane, "No ha agregado ningun vale");
+            return;
+        }
+        if (tfres.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(rootPane, "Ingrese responsable");
+            tfres.requestFocus();
+            return;
+        }
+        
+        if (tfcan.getText().isEmpty() || tfcan.getText().equals(0) ) {
+            JOptionPane.showMessageDialog(rootPane, "Ingrese cantidad");
+            tfcan.requestFocus();  
+            return;
+        }
+        int can=Integer.parseInt(tfcan.getText());
+        if (can >3) {
+            JOptionPane.showMessageDialog(rootPane, "Ingrese cantidad");
+            tfcan.requestFocus();  
+            return;
+        }
+        
+        if (jlgas.isSelectedIndex(0)) {
+            JOptionPane.showMessageDialog(rootPane, "Selecciona gas ");
+            jlgas.requestFocus();
+            
         } else {
-            String cant = JOptionPane.showInputDialog("A quien entregaras el gas");
-
-            if ((cant == null || cant.equals(""))) {
-                JOptionPane.showMessageDialog(null, "Ingresa el nombre de la persona que lleva el gas");
-
-            } else {
-
-                for (int i = 0; i < frmLisVal.tbvalagr.getRowCount(); i++) {
-                    mDetVal Sql = new mDetVal();
-                    Vales insdv = new Vales();
-                    LocalDate localDate = LocalDate.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
-                    String fec = localDate.format(formatter);
-                    Sql.setFecdetval(fec);
-                    Sql.setEstdetval("2");
-                    Sql.setResponsable(cant);
-                    Sql.setIddetval(Integer.parseInt(tbvalagr.getValueAt(i, 0).toString()));
-                    insdv.act_valfir(Sql);
-                }
-
-                DefaultTableModel modelo = (DefaultTableModel) tbvalagr.getModel();
-                int a = tbvalagr.getRowCount() - 1;
-                int i;
-                for (i = a; i >= 0; i--) {
-                    modelo.removeRow(i);
-                }
-                visualizar(tblisbol, txtvaldni.getText());
-                mostrar1(txtvaldni.getText());
-                txtvaldni.requestFocus();
-                txtvaldni.setSelectionStart(0);
-                txtvaldni.setSelectionEnd(txtvaldni.getText().length());
+            dat_pro();
+            int cangas = Integer.parseInt(tfcan.getText());
+            double monto;
+            int pre1=Integer.parseInt(lbpre1.getText());
+            int pre2=Integer.parseInt(lbpre2.getText());
+            int pre3=Integer.parseInt(lbpre3.getText());
+            if(numfil==1 && cangas==1){
+                monto=pre1;
+                return;
             }
+            if(numfil==2 && cangas==1){
+                monto=pre2;
+                return;
+            }
+            if(numfil==3 && cangas==1){
+                monto=pre3;
+                return;
+            }
+            if(numfil==3 && cangas==2){
+                monto=30;
+                return;
+            }
+            if(numfil==2 && cangas==2){
+                monto=pre1*cangas;
+                return;
+            }
+            if(numfil==3 && cangas==3){
+                monto=pre1*cangas;
+                return;
+            }
+            mDetVal mval = new mDetVal();
+            for (int i = 0; i < frmLisVal.tbvalagr.getRowCount(); i++) {
+                LocalDate localDate = LocalDate.now();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy");
+                String fec = localDate.format(formatter);
+                mval.setFecdetval(fec);
+                mval.setEstdetval("2");
+                mval.setResponsable(tfres.getText());
+                mval.setIddetval(Integer.parseInt(tbvalagr.getValueAt(i, 0).toString()));
+                val.act_valfir(mval);
+            }
+
+            vis_tab.lim_tabla(tbvalagr);
+            vis_tab.val_acu(tblisbol, txtvaldni.getText());
+            val_cam();
+            tab_val_ent(txtvaldni.getText());
+            txtvaldni.requestFocus();
+            txtvaldni.setSelectionStart(0);
+            txtvaldni.setSelectionEnd(txtvaldni.getText().length());
+            tfres.setText("");
+            tfcan.setText("");
+            jlgas.setSelectedIndex(0);
 
         }
     }//GEN-LAST:event_btnvenActionPerformed
-
-    private void txtcodvalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcodvalActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtcodvalActionPerformed
 
     private void txtcodvalKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcodvalKeyPressed
         // TODO add your handling code here:
@@ -707,26 +693,22 @@ public class frmLisVal extends javax.swing.JInternalFrame {
             }
             if (cbomes.getSelectedIndex() == 0 || cboano.getSelectedIndex() == 0) {
                 JOptionPane.showMessageDialog(null, "ingresar fecha");
-                return;
             } else {
-
-                mDetVal sSql = new mDetVal();
-                Vales insdv = new Vales();
-                sSql.setMesvale(cbomes.getSelectedIndex());
-                sSql.setAnovale(cboano.getSelectedItem().toString());
-                sSql.setIdcli(Integer.parseInt(lbcodcli.getText()));
-                if (insdv.ver_vale(sSql).equals("")) {
-                    mDetVal Sql1 = new mDetVal();
-                    Sql1.setIdcli(Integer.parseInt(lbcodcli.getText()));
-                    Sql1.setCoddetval(txtcodval.getText());
-                    Sql1.setEstdetval("0");
-                    Sql1.setMesvale(cbomes.getSelectedIndex());
-                    Sql1.setAnovale(cboano.getSelectedItem().toString());
-                    insdv.ins_detval(Sql1);
+                mDetVal mval = new mDetVal();
+                mval.setMesvale(cbomes.getSelectedIndex());
+                mval.setAnovale(cboano.getSelectedItem().toString());
+                mval.setIdcli(Integer.parseInt(lbcodcli.getText()));
+                if (val.ver_vale(mval).equals("")) {
+                    mval.setIdcli(Integer.parseInt(lbcodcli.getText()));
+                    mval.setCoddetval(txtcodval.getText());
+                    mval.setEstdetval("0");
+                    mval.setMesvale(cbomes.getSelectedIndex());
+                    mval.setAnovale(cboano.getSelectedItem().toString());
+                    val.ins_detval(mval);
                     txtvaldni.requestFocus();
                     txtvaldni.setSelectionStart(0);
                     txtvaldni.setSelectionEnd(txtvaldni.getText().length());
-                    visualizar1(tabmes, txtvaldni.getText());
+                    vis_tab.val_no_fir(tabmes, txtvaldni.getText());
                     txtcodval.setText("");
                     txtcli.setText("");
                     txtcodval.setEnabled(false);
@@ -743,10 +725,7 @@ public class frmLisVal extends javax.swing.JInternalFrame {
 
     private void txtcodvalKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcodvalKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if ((c < '0' || c > '9')) {
-            evt.consume();
-        }
+        vallenu.solonum(evt);
     }//GEN-LAST:event_txtcodvalKeyTyped
 
     private void btnregpro1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnregpro1ActionPerformed
@@ -793,16 +772,16 @@ public class frmLisVal extends javax.swing.JInternalFrame {
                     try {
                         int YesOrNo = JOptionPane.showConfirmDialog(null, "Estas seguro que firmó", "confirma el mensaje", JOptionPane.YES_NO_OPTION);
                         if (YesOrNo == 0) {
-                            mDetVal sSql = new mDetVal();
-                            Vales emp = new Vales();
-                            sSql.setIddetval(Integer.parseInt("" + tabmes.getValueAt(rown, 0)));
-                            sSql.setEstdetval("1");
-                            emp.act_valnofir(sSql);
-                            visualizar1(tabmes, txtvaldni.getText());
-                            visualizar(tblisbol, txtvaldni.getText());
-                            CanValAcu();
+                            mDetVal mval = new mDetVal();
+                            mval.setIddetval(Integer.parseInt("" + tabmes.getValueAt(rown, 0)));
+                            mval.setEstdetval("1");
+                            val.act_valnofir(mval);
+                            vis_tab.val_no_fir(tabmes, txtvaldni.getText());
+                            vis_tab.val_acu(tblisbol, txtvaldni.getText());
+                            val_cam();
+                            cant_val_acu();
                         }
-                    } catch (Exception ex) {
+                    } catch (HeadlessException | NumberFormatException ex) {
                         System.out.println(ex.getMessage());
                     }
                 }
@@ -819,12 +798,33 @@ public class frmLisVal extends javax.swing.JInternalFrame {
         pro.setVisible(true);
     }//GEN-LAST:event_btnregpro3ActionPerformed
 
-    private void txtvaldniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtvaldniActionPerformed
+    private void tfresKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfresKeyPressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtvaldniActionPerformed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            tfcan.requestFocus();
+        }
+    }//GEN-LAST:event_tfresKeyPressed
+
+    private void tfresKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfresKeyTyped
+        // TODO add your handling code here:
+
+        vallenu.sololet(evt);
+
+    }//GEN-LAST:event_tfresKeyTyped
+
+    private void tfcanKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfcanKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            jlgas.requestFocus();
+        }
+    }//GEN-LAST:event_tfcanKeyPressed
+
+    private void tfcanKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfcanKeyTyped
+        // TODO add your handling code here:
+        vallenu.solonum(evt);
+    }//GEN-LAST:event_tfcanKeyTyped
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btneli;
     private javax.swing.JButton btnregpro1;
     private javax.swing.JButton btnregpro2;
     private javax.swing.JButton btnregpro3;
@@ -833,20 +833,30 @@ public class frmLisVal extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cboano;
     private javax.swing.JComboBox<String> cbomes;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JList<String> jlgas;
     private javax.swing.JLabel lbcodcli;
     private javax.swing.JLabel lbdin;
+    private javax.swing.JLabel lbpre1;
+    private javax.swing.JLabel lbpre2;
+    private javax.swing.JLabel lbpre3;
     private javax.swing.JTable tabmes;
     public static javax.swing.JTable tblisbol;
     private javax.swing.JTable tbliscli;
     public static javax.swing.JTable tbvalagr;
+    private javax.swing.JTextField tfcan;
+    private javax.swing.JTextField tfres;
     private javax.swing.JTextField txtcli;
     public static javax.swing.JTextField txtcodval;
     private javax.swing.JLabel txtidven;

@@ -5,18 +5,13 @@
  */
 package view;
 
-import controllers.Cliente;
+import validaciones.Let_Num;
 import controllers.Vales;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.table.DefaultTableModel;
 import model.mDetVal;
 
@@ -25,7 +20,7 @@ import model.mDetVal;
  * @author DARVIN
  */
 public class frmNoCan extends javax.swing.JInternalFrame {
-
+Let_Num vallenu = new Let_Num();
     /**
      * Creates new form frmLisCli
      */
@@ -39,12 +34,12 @@ public class frmNoCan extends javax.swing.JInternalFrame {
             DefaultTableModel modelo;
             Vales clilis = new Vales();
             mDetVal md = new mDetVal();
-            md.setMesvale(cbomes.getSelectedIndex());
-            md.setAnovale(cboano.getSelectedItem().toString());
+            md.setMesvale(Integer.parseInt(tfmes.getText()));
+            md.setAnovale(tfano.getText());
             modelo = clilis.no_can(md);
-            this.tbliscli.setModel(modelo);
+            tbliscli.setModel(modelo);
             tbliscli.getColumnModel().getColumn(0).setPreferredWidth(10);
-        tbliscli.getColumnModel().getColumn(1).setPreferredWidth(300);
+            tbliscli.getColumnModel().getColumn(1).setPreferredWidth(300);
 
         } catch (Exception e) {
             JOptionPane.showConfirmDialog(null, e);
@@ -63,12 +58,11 @@ public class frmNoCan extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbliscli = new javax.swing.JTable();
-        cbomes = new javax.swing.JComboBox<>();
-        cboano = new javax.swing.JComboBox<>();
         btnent = new javax.swing.JButton();
-        btnbus1 = new javax.swing.JButton();
         tfano = new javax.swing.JTextField();
         tfmes = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -121,24 +115,6 @@ public class frmNoCan extends javax.swing.JInternalFrame {
             tbliscli.getColumnModel().getColumn(1).setPreferredWidth(300);
         }
 
-        cbomes.setBackground(new java.awt.Color(255, 102, 0));
-        cbomes.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        cbomes.setForeground(new java.awt.Color(255, 0, 0));
-        cbomes.setMaximumRowCount(13);
-        cbomes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "mes", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" }));
-        cbomes.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        cbomes.setPreferredSize(new java.awt.Dimension(80, 23));
-
-        cboano.setBackground(new java.awt.Color(255, 102, 0));
-        cboano.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        cboano.setForeground(new java.awt.Color(255, 0, 0));
-        cboano.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "anio", "2017", "2018", "2019", "2020", "2021", "2022", "2023" }));
-        cboano.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cboanoMouseClicked(evt);
-            }
-        });
-
         btnent.setText("Validar");
         btnent.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -146,18 +122,27 @@ public class frmNoCan extends javax.swing.JInternalFrame {
             }
         });
 
-        btnbus1.setText("Buscar");
-        btnbus1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnbus1ActionPerformed(evt);
+        tfano.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfanoKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfanoKeyTyped(evt);
             }
         });
 
-        tfano.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfanoActionPerformed(evt);
+        tfmes.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfmesKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfmesKeyTyped(evt);
             }
         });
+
+        jLabel1.setText("Mes:");
+
+        jLabel2.setText("Año:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -170,15 +155,13 @@ public class frmNoCan extends javax.swing.JInternalFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cbomes, 0, 72, Short.MAX_VALUE)
-                            .addComponent(tfmes))
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfmes, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(cboano, 0, 72, Short.MAX_VALUE)
-                            .addComponent(tfano))
-                        .addGap(28, 28, 28)
-                        .addComponent(btnbus1)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfano, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnent)))
                 .addContainerGap())
@@ -188,15 +171,12 @@ public class frmNoCan extends javax.swing.JInternalFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbomes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cboano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnent)
-                    .addComponent(btnbus1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tfano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfmes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tfano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -215,20 +195,6 @@ public class frmNoCan extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cboanoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cboanoMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboanoMouseClicked
-
-    private void btnbus1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbus1ActionPerformed
-        // TODO add your handling code here:
-        if (cbomes.getSelectedIndex() == 0 || cboano.getSelectedIndex() == 0) {
-            JOptionPane.showMessageDialog(null, "Ingresar fecha");
-            return;
-        } else {
-            mostrar();
-        }
-    }//GEN-LAST:event_btnbus1ActionPerformed
-
     private void btnentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnentActionPerformed
         // TODO add your handling code here:
         int YesOrNo = JOptionPane.showConfirmDialog(null, "Estas seguro de regular", "confirma el mensaje", JOptionPane.YES_NO_OPTION);
@@ -237,7 +203,7 @@ public class frmNoCan extends javax.swing.JInternalFrame {
                 mDetVal Sql = new mDetVal();
                 Vales emp = new Vales();
                 SimpleDateFormat formateador = new SimpleDateFormat(
-                    "dd 'de' MMMM 'de' yyyy", new Locale("ES"));
+                        "dd 'de' MMMM 'de' yyyy", new Locale("ES"));
                 Date fechaDate = new Date();
                 String fec = formateador.format(fechaDate);
                 Sql.setResponsable("nc");
@@ -251,15 +217,34 @@ public class frmNoCan extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_btnentActionPerformed
 
-    private void tfanoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfanoActionPerformed
+    private void tfmesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfmesKeyPressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_tfanoActionPerformed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            this.tfano.requestFocus();
+        }
+    }//GEN-LAST:event_tfmesKeyPressed
+
+    private void tfanoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfanoKeyPressed
+        // TODO add your handling code here: 
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+           mostrar();
+        }
+    }//GEN-LAST:event_tfanoKeyPressed
+
+    private void tfmesKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfmesKeyTyped
+        // TODO add your handling code here:
+        vallenu.solonum(evt);
+    }//GEN-LAST:event_tfmesKeyTyped
+
+    private void tfanoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfanoKeyTyped
+        // TODO add your handling code here:
+        vallenu.solonum(evt);
+    }//GEN-LAST:event_tfanoKeyTyped
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnbus1;
     private javax.swing.JButton btnent;
-    private javax.swing.JComboBox<String> cboano;
-    private javax.swing.JComboBox<String> cbomes;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     public static javax.swing.JTable tbliscli;

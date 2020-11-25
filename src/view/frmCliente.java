@@ -1,80 +1,28 @@
 package view;
 
+import validaciones.Let_Num;
 import model.*;
 import controllers.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.JPopupMenu;
-import javax.swing.table.DefaultTableModel;
+import validaciones.visualtabla;
 
 /**
  *
  * @author DARVIN
  */
 public class frmCliente extends javax.swing.JInternalFrame {
-
-    public JButton btn_edi = new JButton("Editar");
+    Let_Num vallenu = new Let_Num();
+    visualtabla v1 = new visualtabla();
     int rown = -1;
-
     public frmCliente() {
         initComponents();
         idcli.setVisible(false);
         idcli1.setVisible(false);
         String valor1 = this.txtbusca.getText().trim();
-        lis_cli(tbcli, valor1);
+        v1.lis_cli(tbcli, valor1);
 
     }
-    private boolean[] editable = {false, false, false, false, false, false};
-    Cliente dao;
-
-    public void lis_cli(JTable tabla, String valor) {
-
-        tabla.setDefaultRenderer(Object.class, new Render());
-        DefaultTableModel dt = new DefaultTableModel(new String[]{"Id", "Apellidos", "Nombres", "DNI", "Telefono", "Selecciona"}, 0) {
-
-            Class[] types = new Class[]{
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class,
-                java.lang.Object.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types[columnIndex];
-            }
-
-            public boolean isCellEditable(int row, int column) {
-                return editable[column];
-            }
-        };
-        btn_edi.setName("q");
-
-        dao = new Cliente();
-        mCliente vo = new mCliente();
-        ArrayList<mCliente> list = dao.Lis_Cli(valor);
-        if (list.size() > 0) {
-            for (int i = 0; i < list.size(); i++) {
-                Object fila[] = new Object[6];
-                vo = list.get(i);
-                fila[0] = vo.getIdcli();
-                fila[1] = vo.getApecli();
-                fila[2] = vo.getNomcli();
-                fila[3] = vo.getDnicli();
-                fila[4] = vo.getTelcli();
-                fila[5] = btn_edi;
-                dt.addRow(fila);
-            }
-        }
-        tabla.setModel(dt);
-        tabla.setRowHeight(20);
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(7);
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(80);
-    }
-
     void accionNuevo() {
         txtapecli.setText("");
         txtnomcli.setText("");
@@ -131,9 +79,6 @@ public class frmCliente extends javax.swing.JInternalFrame {
         txtbusca.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtbuscaKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtbuscaKeyTyped(evt);
             }
         });
 
@@ -200,11 +145,6 @@ public class frmCliente extends javax.swing.JInternalFrame {
         jLabel2.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         jLabel2.setText("Apellidos");
 
-        txtapecli.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtapecliActionPerformed(evt);
-            }
-        });
         txtapecli.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtapecliKeyPressed(evt);
@@ -217,11 +157,6 @@ public class frmCliente extends javax.swing.JInternalFrame {
         jLabel3.setFont(new java.awt.Font("Times New Roman", 3, 14)); // NOI18N
         jLabel3.setText("Nombres");
 
-        txtnomcli.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtnomcliActionPerformed(evt);
-            }
-        });
         txtnomcli.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtnomcliKeyPressed(evt);
@@ -339,19 +274,8 @@ public class frmCliente extends javax.swing.JInternalFrame {
 
     private void txtapecliKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtapecliKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if (!(c < '0' || c > '9')) {
-            evt.consume();
-        }
+       vallenu.sololet(evt);
     }//GEN-LAST:event_txtapecliKeyTyped
-
-    private void txtbuscaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscaKeyTyped
-        // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if (!(c < '0' || c > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_txtbuscaKeyTyped
 
     private void btnNueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNueActionPerformed
         // TODO add your handling code here:
@@ -437,7 +361,7 @@ public class frmCliente extends javax.swing.JInternalFrame {
                     sSql.setTelcli(txttelcli.getText());
                     sSql.setIdcli(Integer.parseInt(idcli.getText()));
                     cli.act_cli(sSql);
-                    lis_cli(tbcli, txtbusca.getText());
+                    v1.lis_cli(tbcli, txtbusca.getText());
                 } else {
                     sSql.setApecli(txtapecli.getText());
                     sSql.setNomcli(txtnomcli.getText());
@@ -451,7 +375,7 @@ public class frmCliente extends javax.swing.JInternalFrame {
                         Bidon bid = new Bidon();
                         sSql1.setIdcli(1);
                         bid.ins_bid(sSql1);
-                        lis_cli(tbcli, "");
+                        v1.lis_cli(tbcli, "");
                     }
 
                 }
@@ -461,18 +385,12 @@ public class frmCliente extends javax.swing.JInternalFrame {
 
     private void txttelcliKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttelcliKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if ((c < '0' || c > '9')) {
-            evt.consume();
-        }
+       vallenu.solonum(evt);
     }//GEN-LAST:event_txttelcliKeyTyped
 
     private void txtnomcliKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtnomcliKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if (!(c < '0' || c > '9')) {
-            evt.consume();
-        }
+       vallenu.sololet(evt);
     }//GEN-LAST:event_txtnomcliKeyTyped
 
     private void txtdnicliKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdnicliKeyPressed
@@ -484,10 +402,7 @@ public class frmCliente extends javax.swing.JInternalFrame {
 
     private void txtdnicliKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdnicliKeyTyped
         // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if ((c < '0' || c > '9')) {
-            evt.consume();
-        }
+        vallenu.solonum(evt);
     }//GEN-LAST:event_txtdnicliKeyTyped
 
     private void txttelcliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txttelcliActionPerformed
@@ -498,20 +413,12 @@ public class frmCliente extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             String valor1 = this.txtbusca.getText().trim();
-            lis_cli(tbcli, valor1);
+            v1.lis_cli(tbcli, valor1);
             txtbusca.requestFocus();
             txtbusca.setSelectionStart(0);
             txtbusca.setSelectionEnd(txtbusca.getText().length());
         }
     }//GEN-LAST:event_txtbuscaKeyPressed
-
-    private void txtapecliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtapecliActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtapecliActionPerformed
-
-    private void txtnomcliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnomcliActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtnomcliActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

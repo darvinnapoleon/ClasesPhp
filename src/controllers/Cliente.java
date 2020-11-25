@@ -109,7 +109,6 @@ public class Cliente {
         }
     }
 
-
     public String verificadni(mCliente sSql) {
         sql = "SELECT * FROM cliente where dnicli=?";
         String dni = "";

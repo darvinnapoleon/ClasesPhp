@@ -7,22 +7,20 @@ package view;
 
 import model.mUsuario;
 import controllers.Logeo;
-import controllers.Usuario;
 import com.sun.glass.events.KeyEvent;
-import java.text.SimpleDateFormat;
+import validaciones.Let_Num;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
  * @author DARVIN
  */
 public class frmLogeo extends javax.swing.JFrame {
+     Let_Num vallenu = new Let_Num();
 
     /**
      * Creates new form napo
@@ -81,17 +79,9 @@ public class frmLogeo extends javax.swing.JFrame {
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagenes/Imagenes/gas.jpg"))); // NOI18N
 
-        txtlogin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtloginActionPerformed(evt);
-            }
-        });
         txtlogin.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtloginKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtloginKeyTyped(evt);
             }
         });
 
@@ -159,19 +149,6 @@ public class frmLogeo extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtloginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtloginActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_txtloginActionPerformed
-
-    private void txtloginKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtloginKeyTyped
-        // TODO add your handling code here:
-        char c = evt.getKeyChar();
-        if (!(c < '0' || c > '9')) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_txtloginKeyTyped
 
     private void txtloginKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtloginKeyPressed
         // TODO add your handling code here:
